@@ -11,6 +11,7 @@ g++ a.cpp -lGL -lGLU -lglut -lm -o main*/
 #define YELLOW	 1.0, 1.0, 0.0, 1.0
 #define GREEN    0.0, 1.0, 0.0, 1.0
 #define BLACK    0.0, 0.0, 0.0, 1.0
+
 #define PI		 3.14159
 
 
@@ -25,6 +26,7 @@ GLfloat  obsT[] = {0,1,0};
 GLfloat  angZoom=90;
 
 GLboolean   frenteVisivel=1;
+GLboolean   visivel = 1;
 
 
 
@@ -44,19 +46,19 @@ void drawEixos(){
 	glColor4f(RED);
 	glBegin(GL_LINES);
 		glVertex3i( 0, 0, 0); 
-		glVertex3i(10, 0, 0); 
+		glVertex3i(20, 0, 0); 
 	glEnd();
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Eixo Y
 	glColor4f(GREEN);
 	glBegin(GL_LINES);
 		glVertex3i(0,  0, 0); 
-		glVertex3i(0, 10, 0); 
+		glVertex3i(0, 20, 0); 
 	glEnd();
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Eixo Z
 	glColor4f(BLUE);
 	glBegin(GL_LINES);
 		glVertex3i( 0, 0, 0); 
-		glVertex3i( 0, 0,10); 
+		glVertex3i( 0, 0, 20); 
 	glEnd();
 
 }	
@@ -64,10 +66,10 @@ void drawEixos(){
 void drawRectangle(GLfloat width, GLfloat length, GLfloat height, GLfloat r, GLfloat g, GLfloat b){
 	glColor3f(r, g, b);
 	glBegin(GL_POLYGON);
-	glVertex3f(-width, height, -length);
-	glVertex3f(-width, height, length);
-	glVertex3f(width,	 height, length);
-	glVertex3f(width, height, -length);
+		glVertex3f(-width, height, -length);
+		glVertex3f(-width, height, length);
+		glVertex3f(width, height, length);
+		glVertex3f(width, height, -length);
 	glEnd();
 }
 
@@ -108,6 +110,48 @@ void step(GLfloat width, GLfloat length, int nSteps){
 	}
 }
 
+void walls(GLfloat width, GLfloat length, GLfloat height){
+	glPushMatrix();
+		//Wall x/y
+		glTranslatef(0,height,width);
+		glRotatef(90, 0, 0, 1);
+		drawRectangle(height,width,0,1,0,1);
+	glPopMatrix();
+
+	glPushMatrix();
+		//Wall x/y on z
+		glTranslatef(2*length,height,width);
+		glRotatef(90, 0, 0, 1);
+		drawRectangle(height,width,0,1,0,1);
+	glPopMatrix();
+
+	glPushMatrix();
+		//Wall z/y
+		glTranslatef(length,height,0);
+		glRotatef(90, 1, 0, 0);
+		drawRectangle(length,height,0,0,1,1);
+	glPopMatrix();
+
+	glPushMatrix();
+		//Wall z/y on x
+		glTranslatef(length,height,2*width);
+		glRotatef(90, 1, 0, 0);
+		drawRectangle(length,height,0,0,1,1);
+	glPopMatrix();
+
+	glPushMatrix();
+		//Floor
+		glTranslatef(length,0,width);
+		drawRectangle(length,width,0,1,1,0);
+	glPopMatrix();
+
+	glPushMatrix();
+		//Ceiling
+		glTranslatef(length,2*height,width);
+		drawRectangle(length,width,0,0,1,0);
+	glPopMatrix();
+}
+
 
 void drawScene(){
 	
@@ -116,10 +160,10 @@ void drawScene(){
 	else
 	    glCullFace(GL_FRONT);  //glFrontFace(GL_CCW);
 
-	int i;
 	glPushMatrix();	
-		step(2, 1.6, 5);
-
+		//step(2, 1.6, 4);
+		//walls(4,2,1);
+		
 		glColor4f(YELLOW);
 		glutWireTeapot(1);		
 	glPopMatrix();
@@ -129,7 +173,6 @@ void display(void){
 	//Apaga ecra/profundidade
 	 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-	
 	//================================================================= NAO MOFIFICAR
 	glViewport (0, 0, wScreen, hScreen);								
 	glMatrixMode(GL_PROJECTION);										// ESQUECER PoR AGORA
@@ -141,7 +184,6 @@ void display(void){
 
 	gluLookAt(obsP[0], obsP[1], obsP[2], obsT[0],obsT[1],obsT[2], 0, 1, 0);
 
-	//Objectos/modelos
 	drawEixos(); 
 	drawScene(); 	
 	
@@ -158,8 +200,11 @@ void keyboard(unsigned char key, int x, int y){
 		glutPostRedisplay();
 		break;
 
-	case 'A':
-	case 'a':
+	case 'V':
+	case 'v':
+		if(visivel) glDisable(GL_CULL_FACE);
+		else glEnable(GL_CULL_FACE);
+		visivel = !visivel;
 		glutPostRedisplay();
 	break;
 
@@ -224,7 +269,7 @@ int main(int argc, char** argv){
 	glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH );
 	glutInitWindowSize (wScreen, hScreen); 
 	glutInitWindowPosition (300, 100); 
-	glutCreateWindow ("{jh,pjmm}@dei.uc.pt|       |FaceVisivel:'f'|      |Observador:'SETAS'|        |Andar-'a/s'|        |Rodar -'e/d'| ");
+	glutCreateWindow ("|FaceVisivel:'f'|      |Observador:'SETAS'|        |Enable/Disable Face-'v'|");
   
 	inicializa();
 	
