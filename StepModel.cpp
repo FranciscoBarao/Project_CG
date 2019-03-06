@@ -10,7 +10,6 @@ g++ a.cpp -lGL -lGLU -lglut -lm -o main*/
 #define RED		 1.0, 0.0, 0.0, 1.0
 #define YELLOW	 1.0, 1.0, 0.0, 1.0
 #define GREEN    0.0, 1.0, 0.0, 1.0
-#define WHITE    1.0, 1.0, 1.0, 1.0
 #define BLACK    0.0, 0.0, 0.0, 1.0
 #define PI		 3.14159
 
@@ -20,20 +19,16 @@ GLint		wScreen=800, hScreen=600;		//.. janela (pixeis)
 GLfloat		xC=10.0, yC=10.0, zC=10.0;		//.. Mundo  (unidades mundo)
 
 //------------------------------------------------------------ Observador 
-GLfloat  rVisao=10, aVisao=0.5*PI, incVisao=0.05;
-GLfloat  obsP[] ={rVisao*cos(aVisao), 1.0, rVisao*sin(aVisao)};
-GLfloat  obsT[] ={0,0,0};
+GLfloat  aVisao = PI*1.5; //Porque PI*1.5?  aproximadamente 5
+GLfloat  obsP[] = {0, 1, 5};
+GLfloat  obsT[] = {0,1,0};
 GLfloat  angZoom=90;
-GLfloat  incZoom=3;
 
-
-//=========================================================== FACES DA MESA
 GLboolean   frenteVisivel=1;
 
 
 
-void inicializa(void)
-{
+void inicializa(void){
 	glClearColor(BLACK);		//Apagar
 	glEnable(GL_DEPTH_TEST);	//Profundidade
 	glShadeModel(GL_SMOOTH);	//Interpolacao de cores	
@@ -44,8 +39,7 @@ void inicializa(void)
 
 
 
-void drawEixos()
-{	
+void drawEixos(){	
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Eixo X
 	glColor4f(RED);
 	glBegin(GL_LINES);
@@ -67,8 +61,7 @@ void drawEixos()
 
 }	
 
-void drawRectangle(GLfloat width, GLfloat length, GLfloat height, GLfloat r, GLfloat g, GLfloat b)
-{
+void drawRectangle(GLfloat width, GLfloat length, GLfloat height, GLfloat r, GLfloat g, GLfloat b){
 	glColor3f(r, g, b);
 	glBegin(GL_POLYGON);
 	glVertex3f(-width, height, -length);
@@ -78,17 +71,12 @@ void drawRectangle(GLfloat width, GLfloat length, GLfloat height, GLfloat r, GLf
 	glEnd();
 }
 
-void step(GLfloat width, GLfloat length, int nSteps)
-{
+void step(GLfloat width, GLfloat length, int nSteps){
 	float piso = length;
 	float largura = width;
 	float espelho = (3.2 - piso) / 2;
 
-	GLfloat Mov_XU = 0;
-	GLfloat Mov_XD = 0;
-	GLfloat Mov_YD = 0;
-	GLfloat Mov_YU = 0;
-	GLfloat Mov_Z = 0;
+	GLfloat Mov_XU = 0, Mov_XD=0, Mov_YD=0, Mov_YU=0, Mov_Z=0;
 
 	if (espelho < 0)
 	{
@@ -161,7 +149,6 @@ void display(void){
 }
 
 
-//======================================================= EVENTOS
 void keyboard(unsigned char key, int x, int y){
 	
 	switch (key) {
