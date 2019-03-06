@@ -67,37 +67,58 @@ void drawEixos()
 
 }	
 
-void drawRectangleFlat(GLfloat width, GLfloat length, GLfloat height, GLfloat r, GLfloat g, GLfloat b)
-{
-	glColor3f(r, g, b);
-	glBegin(GL_POLYGON);	                  
-		glVertex3f(-width , 0 , -length); 
-		glVertex3f(-width , 0 , length);
-		glVertex3f(width , 0 , length);
-		glVertex3f(width , 0 , -length);               
-	glEnd();
-}
-void drawRectangleUP(GLfloat width, GLfloat length, GLfloat height, GLfloat r, GLfloat g, GLfloat b)
+void drawRectangle(GLfloat width, GLfloat length, GLfloat height, GLfloat r, GLfloat g, GLfloat b)
 {
 	glColor3f(r, g, b);
 	glBegin(GL_POLYGON);
-		glVertex3f(-width , 1 , -length); 
-		glVertex3f(-width , 1 , length);
-		glVertex3f(width , 1 , length);
-		glVertex3f(width , 1 , -length);
+	glVertex3f(-width, height, -length);
+	glVertex3f(-width, height, length);
+	glVertex3f(width,	 height, length);
+	glVertex3f(width, height, -length);
 	glEnd();
 }
 
+void step(GLfloat width, GLfloat length, int nSteps)
+{
+	float piso = length;
+	float largura = width;
+	float espelho = (3.2 - piso) / 2;
 
-void step(){
-		drawRectangleFlat(2,4,0,1,0,0);
+	GLfloat Mov_XU = 0;
+	GLfloat Mov_XD = 0;
+	GLfloat Mov_YD = 0;
+	GLfloat Mov_YU = 0;
+	GLfloat Mov_Z = 0;
 
+	if (espelho < 0)
+	{
+		espelho = -espelho;
+	}
+	int i=0;
+	Mov_YU = espelho/2;
+	Mov_XU = largura;
+	for (i=0;i<nSteps;i++)
+	{
+		//down
 		glPushMatrix();
-			glTranslatef(0,0,0);
-			glRotatef(-90,0,0,1);
-			drawRectangleUP(0.5,4,0, 0,1,0);
+		glTranslatef(Mov_XD, Mov_YD, Mov_Z);
+		drawRectangle(largura, piso, 0, 1, 0, 0);
 		glPopMatrix();
-		}	
+		
+		
+		//up
+		glPushMatrix();
+		glTranslatef(Mov_XU, Mov_YU, Mov_Z);
+		glRotatef(90, 0, 0, 1);
+		drawRectangle(largura/5, piso,0, 0, 1, 0);
+		glPopMatrix();
+
+		Mov_YU += espelho;
+		Mov_YD += espelho;
+		Mov_XD += (2*largura);
+		Mov_XU += 2*largura;
+	}
+}
 
 
 void drawScene(){
@@ -109,7 +130,7 @@ void drawScene(){
 
 	int i;
 	glPushMatrix();	
-		step();
+		step(2, 1.6, 5);
 
 		glColor4f(YELLOW);
 		glutWireTeapot(1);		
