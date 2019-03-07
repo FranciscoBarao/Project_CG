@@ -73,10 +73,10 @@ void drawRectangle(GLfloat width, GLfloat length, GLfloat height, GLfloat r, GLf
 	glEnd();
 }
 
-void step(GLfloat width, GLfloat length, int nSteps){
+void stair(GLfloat width, GLfloat length,GLfloat xIni,GLfloat yIni,GLfloat zIni, int nSteps){
 	float piso = length;
 	float largura = width;
-	float espelho = (3.2 - piso) / 2;
+	float espelho = (0.4 - piso) / 2;
 
 	GLfloat Mov_XU = 0, Mov_XD=0, Mov_YD=0, Mov_YU=0, Mov_Z=0;
 
@@ -91,14 +91,14 @@ void step(GLfloat width, GLfloat length, int nSteps){
 	{
 		//down
 		glPushMatrix();
-		glTranslatef(Mov_XD, Mov_YD, Mov_Z);
+		glTranslatef(Mov_XD+xIni, Mov_YD+yIni, Mov_Z+zIni);
 		drawRectangle(largura, piso, 0, 1, 0, 0);
 		glPopMatrix();
 		
 		
 		//up
 		glPushMatrix();
-		glTranslatef(Mov_XU, Mov_YU, Mov_Z);
+		glTranslatef(Mov_XU+xIni, Mov_YU+yIni, Mov_Z+zIni);
 		glRotatef(90, 0, 0, 1);
 		drawRectangle(largura/5, piso,0, 0, 1, 0);
 		glPopMatrix();
@@ -109,6 +109,8 @@ void step(GLfloat width, GLfloat length, int nSteps){
 		Mov_XU += 2*largura;
 	}
 }
+
+
 
 void walls(GLfloat width, GLfloat length, GLfloat height){
 	glPushMatrix();
@@ -150,8 +152,24 @@ void walls(GLfloat width, GLfloat length, GLfloat height){
 		glTranslatef(length,2*height,width);
 		drawRectangle(length,width,0,0,1,0);
 	glPopMatrix();
-}
 
+}
+void drawWallDoor(GLfloat width, GLfloat length, GLfloat height, GLfloat lengthD, GLfloat heightD){
+	glPushMatrix();
+		glTranslatef(length+lengthD,0,width);
+		walls(0.1,length/2 - lengthD/2 ,height);
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslatef(0,0, width);
+		walls(0.1,length/2-lengthD/2, height);
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslatef(lengthD, height, width);
+		walls(0.1,lengthD, height-heightD);
+	glPopMatrix();
+}
 
 void drawScene(){
 	
@@ -161,11 +179,13 @@ void drawScene(){
 	    glCullFace(GL_FRONT);  //glFrontFace(GL_CCW);
 
 	glPushMatrix();	
-		//step(2, 1.6, 4);
+		//stair(0.25, 0.2,-1,-1,-1,4);
 		//walls(4,2,1);
 		
+		drawRectangle(2,2,2, 1,1,1);
+		//drawWallDoor(4,2,1,1,0.75);
 		glColor4f(YELLOW);
-		glutWireTeapot(1);		
+		glutWireTeapot(1);		 
 	glPopMatrix();
 }
 
