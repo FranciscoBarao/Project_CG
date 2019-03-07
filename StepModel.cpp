@@ -39,8 +39,6 @@ void inicializa(void){
 	glCullFace(GL_BACK);		//Mostrar so as da frente		
 }
 
-
-
 void drawEixos(){	
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Eixo X
 	glColor4f(RED);
@@ -63,13 +61,13 @@ void drawEixos(){
 
 }	
 
-void drawRectangle(GLfloat width, GLfloat length, GLfloat height, GLfloat r, GLfloat g, GLfloat b){
+void drawSquare(GLfloat size, GLfloat r, GLfloat g, GLfloat b){
 	glColor3f(r, g, b);
 	glBegin(GL_POLYGON);
-		glVertex3f(-width, height, -length);
-		glVertex3f(-width, height, length);
-		glVertex3f(width, height, length);
-		glVertex3f(width, height, -length);
+		glVertex3f(-size, 0, -size);
+		glVertex3f(-size, 0, size);
+		glVertex3f(size, 0, size);
+		glVertex3f(size, 0, -size);
 	glEnd();
 }
 
@@ -92,7 +90,8 @@ void stair(GLfloat width, GLfloat length,GLfloat xIni,GLfloat yIni,GLfloat zIni,
 		//down
 		glPushMatrix();
 		glTranslatef(Mov_XD+xIni, Mov_YD+yIni, Mov_Z+zIni);
-		drawRectangle(largura, piso, 0, 1, 0, 0);
+		glScalef(largura,piso,1);
+		drawSquare(1, 1,0,0);
 		glPopMatrix();
 		
 		
@@ -100,7 +99,8 @@ void stair(GLfloat width, GLfloat length,GLfloat xIni,GLfloat yIni,GLfloat zIni,
 		glPushMatrix();
 		glTranslatef(Mov_XU+xIni, Mov_YU+yIni, Mov_Z+zIni);
 		glRotatef(90, 0, 0, 1);
-		drawRectangle(largura/5, piso,0, 0, 1, 0);
+		glScalef(largura/5,piso,1);
+		drawSquare(1, 0,1,0);
 		glPopMatrix();
 
 		Mov_YU += espelho;
@@ -110,97 +110,100 @@ void stair(GLfloat width, GLfloat length,GLfloat xIni,GLfloat yIni,GLfloat zIni,
 	}
 }
 
-
-
 void walls(GLfloat width, GLfloat length, GLfloat height){
 	glPushMatrix();
 		//Wall x/y
 		glTranslatef(0,height,width);
 		glRotatef(90, 0, 0, 1);
-		drawRectangle(height,width,0,1,0,1);
+		glScalef(height,1,width);
+		drawSquare(1, 1,0,1);
 	glPopMatrix();
 
 	glPushMatrix();
-		//Wall x/y on z
+		//Wall x/y on 2z
 		glTranslatef(2*length,height,width);
 		glRotatef(90, 0, 0, 1);
-		drawRectangle(height,width,0,1,0,1);
+		glScalef(height,1,width);
+		drawSquare(1, 1,0,1);
 	glPopMatrix();
 
 	glPushMatrix();
 		//Wall z/y
 		glTranslatef(length,height,0);
 		glRotatef(90, 1, 0, 0);
-		drawRectangle(length,height,0,0,1,1);
+		glScalef(length,1,height);
+		drawSquare(1, 0,1,1);
 	glPopMatrix();
 
 	glPushMatrix();
-		//Wall z/y on x
+		//Wall z/y on 2x
 		glTranslatef(length,height,2*width);
 		glRotatef(90, 1, 0, 0);
-		drawRectangle(length,height,0,0,1,1);
+		glScalef(length,1,height);		
+		drawSquare(1, 0,1,1);
 	glPopMatrix();
 
 	glPushMatrix();
 		//Floor
 		glTranslatef(length,0,width);
-		drawRectangle(length,width,0,1,1,0);
+		glScalef(length,1,width);		
+		drawSquare(1, 1,1,0);
 	glPopMatrix();
 
 	glPushMatrix();
 		//Ceiling
 		glTranslatef(length,2*height,width);
-		drawRectangle(length,width,0,0,1,0);
+		glScalef(length,1,width);		
+		drawSquare(1, 0,1,0);
 	glPopMatrix();
-
 }
-void drawWallDoor(GLfloat width, GLfloat length, GLfloat height, GLfloat lengthD, GLfloat heightD){
-	glPushMatrix();
-		glTranslatef(length+lengthD,0,width);
-		walls(0.1,length/2 - lengthD/2 ,height);
-	glPopMatrix();
 
+void drawWallDoor(GLfloat width, GLfloat length, GLfloat height, GLfloat length_door, GLfloat height_door){
 	glPushMatrix();
 		glTranslatef(0,0, width);
-		walls(0.1,length/2-lengthD/2, height);
+		walls(0.1,length/2-length_door/2, height);
+	glPopMatrix();
+	
+	glPushMatrix();
+		glTranslatef(length + length_door,0,width);
+		walls(0.1,length/2 - length_door/2 ,height);
 	glPopMatrix();
 
 	glPushMatrix();
-		glTranslatef(lengthD, height, width);
-		walls(0.1,lengthD, height-heightD);
+		glTranslatef(length/2+length_door, height , width);
+
+		walls(0.1,length_door, height - height_door);
 	glPopMatrix();
 }
 
 void drawScene(){
-	
+
+	GLfloat width=8, length=4, height=2, width_door=1, height_door=1;
     if (frenteVisivel)
 	    glCullFace(GL_BACK);  //glFrontFace(GL_CW);
 	else
 	    glCullFace(GL_FRONT);  //glFrontFace(GL_CCW);
 
 	glPushMatrix();	
-		//stair(0.25, 0.2,-1,-1,-1,4);
-		//walls(4,2,1);
+		//stair(0.25, 0.2,-1,-1,-1,10);
+		//walls(width,length,height);
+		//drawWallDoor(width+2,length,height, width_door,height_door);
 		
-		drawRectangle(2,2,2, 1,1,1);
-		//drawWallDoor(4,2,1,1,0.75);
 		glColor4f(YELLOW);
 		glutWireTeapot(1);		 
 	glPopMatrix();
 }
 
 void display(void){
-	//Apaga ecra/profundidade
-	 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-	//================================================================= NAO MOFIFICAR
+	 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );//Apaga ecra/profundidade
+
 	glViewport (0, 0, wScreen, hScreen);								
-	glMatrixMode(GL_PROJECTION);										// ESQUECER PoR AGORA
-	glLoadIdentity();													// ESQUECER PoR AGORA
+	glMatrixMode(GL_PROJECTION);										
+	glLoadIdentity();													
 	gluPerspective(angZoom, (float)wScreen/hScreen, 0.1, 3*zC);			
-	glMatrixMode(GL_MODELVIEW);											// ESQUECER PoR AGORA	
-	glLoadIdentity();													// ESQUECER PoR AGORA
-	//================================================================= NAO MOFIFICAR
+	glMatrixMode(GL_MODELVIEW);											
+	glLoadIdentity();													
 
 	gluLookAt(obsP[0], obsP[1], obsP[2], obsT[0],obsT[1],obsT[2], 0, 1, 0);
 
@@ -209,7 +212,6 @@ void display(void){
 	
 	glutSwapBuffers();
 }
-
 
 void keyboard(unsigned char key, int x, int y){
 	
@@ -248,8 +250,6 @@ void keyboard(unsigned char key, int x, int y){
   }
 
 }
-
-
 
 void teclasNotAscii(int key, int x,int y){
 		if(key == GLUT_KEY_UP){
