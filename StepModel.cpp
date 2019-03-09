@@ -14,7 +14,6 @@ g++ a.cpp -lGL -lGLU -lglut -lm -o main*/
 
 #define PI		 3.14159
 
-
 //------------------------------------------------------------ Sistema Coordenadas + objectos
 GLint		wScreen=800, hScreen=600;		//.. janela (pixeis)
 GLfloat		xC=10.0, yC=10.0, zC=10.0;		//.. Mundo  (unidades mundo)
@@ -23,7 +22,9 @@ GLfloat		xC=10.0, yC=10.0, zC=10.0;		//.. Mundo  (unidades mundo)
 GLfloat  aVisao = PI*1.5; //Porque PI*1.5?  aproximadamente 5
 GLfloat  obsP[] = {0, 1, 5};
 GLfloat  obsT[] = {0,1,0};
+
 GLfloat  angZoom=90;
+GLfloat  door_angle=0;
 
 GLboolean   frenteVisivel=1;
 GLboolean   visivel = 1;
@@ -158,27 +159,34 @@ void walls(GLfloat width, GLfloat length, GLfloat height){
 	glPopMatrix();
 }
 
-void drawWallDoor(GLfloat width, GLfloat length, GLfloat height, GLfloat length_door, GLfloat height_door){
+void drawWallDoor(GLfloat width, GLfloat length, GLfloat height, GLfloat length_door, GLfloat height_door,GLfloat depth_wall){
 	glPushMatrix();
 		glTranslatef(0,0, width);
-		walls(0.1,length/2-length_door/2, height);
+		walls(depth_wall,length/2-length_door/2, height);
 	glPopMatrix();
 	
 	glPushMatrix();
 		glTranslatef(length + length_door,0,width);
-		walls(0.1,length/2 - length_door/2 ,height);
+		walls(depth_wall,length/2 - length_door/2 ,height);
 	glPopMatrix();
 
 	glPushMatrix();
-		glTranslatef(length/2+length_door, height , width);
-
+		glTranslatef(length - length_door, height-height_door , width);
 		walls(0.1,length_door, height - height_door);
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslatef(length+length_door , 0, width+depth_wall/2);
+		glRotatef(door_angle,0,1,0);
+		glTranslatef(-2*length_door , 0, 0);
+		walls(0.05,length_door, height_door);
+
 	glPopMatrix();
 }
 
 void drawScene(){
 
-	GLfloat width=8, length=4, height=2, width_door=1, height_door=1;
+	GLfloat width=10, length=5, height=3, depth_wall=0.1,length_door=1, height_door=1;
     if (frenteVisivel)
 	    glCullFace(GL_BACK);  //glFrontFace(GL_CW);
 	else
@@ -187,7 +195,7 @@ void drawScene(){
 	glPushMatrix();	
 		//stair(0.25, 0.2,-1,-1,-1,10);
 		//walls(width,length,height);
-		//drawWallDoor(width+2,length,height, width_door,height_door);
+		drawWallDoor(width+2,length,height, length_door,height_door,depth_wall);
 		
 		glColor4f(YELLOW);
 		glutWireTeapot(1);		 
@@ -196,7 +204,7 @@ void drawScene(){
 
 void display(void){
 
-	 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );//Apaga ecra/profundidade
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );//Apaga ecra/profundidade
 
 	glViewport (0, 0, wScreen, hScreen);								
 	glMatrixMode(GL_PROJECTION);										
@@ -230,23 +238,19 @@ void keyboard(unsigned char key, int x, int y){
 		glutPostRedisplay();
 	break;
 
-	case 'S':
-	case 's':
+	case 'O':
+	case 'o':
+		if(door_angle>-90) door_angle -= 5;
 		glutPostRedisplay();
 	break;
-
-	case 'e':
-	case 'E':
-		glutPostRedisplay();
-	break;
-
-	case 'd':
-	case 'D':
+	case 'C':
+	case 'c':
+		if(door_angle<0) door_angle += 5;
 		glutPostRedisplay();
 	break;
 	case 27:
 		exit(0);
-		break;	
+		break;
   }
 
 }
