@@ -11,6 +11,11 @@ g++ a.cpp -lGL -lGLU -lglut -lm -o main*/
 #define YELLOW	 1.0, 1.0, 0.0, 1.0
 #define GREEN    0.0, 1.0, 0.0, 1.0
 #define BLACK    0.0, 0.0, 0.0, 1.0
+struct Color{
+	float r=0.0;
+	float g=0.0;
+	float b=0.0;
+};
 
 #define PI		 3.14159
 
@@ -111,13 +116,12 @@ void stair(GLfloat width, GLfloat length,GLfloat xIni,GLfloat yIni,GLfloat zIni,
 	}
 }
 
-void walls(GLfloat width, GLfloat length, GLfloat height){
+void walls(GLfloat width, GLfloat length, GLfloat height, Color colors[]){
 	glPushMatrix();
 		//Wall x/y
 		glTranslatef(0,height,width);
 		glRotatef(90, 0, 0, 1);
 		glScalef(height,1,width);
-		drawSquare(1, 1,0,1);
 	glPopMatrix();
 
 	glPushMatrix();
@@ -125,7 +129,7 @@ void walls(GLfloat width, GLfloat length, GLfloat height){
 		glTranslatef(2*length,height,width);
 		glRotatef(90, 0, 0, 1);
 		glScalef(height,1,width);
-		drawSquare(1, 1,0,1);
+		drawSquare(1,colors[1].r,colors[1].g,colors[1].b);
 	glPopMatrix();
 
 	glPushMatrix();
@@ -133,7 +137,7 @@ void walls(GLfloat width, GLfloat length, GLfloat height){
 		glTranslatef(length,height,0);
 		glRotatef(90, 1, 0, 0);
 		glScalef(length,1,height);
-		drawSquare(1, 0,1,1);
+		drawSquare(1,colors[1].r,colors[1].g,colors[1].b);
 	glPopMatrix();
 
 	glPushMatrix();
@@ -141,21 +145,21 @@ void walls(GLfloat width, GLfloat length, GLfloat height){
 		glTranslatef(length,height,2*width);
 		glRotatef(90, 1, 0, 0);
 		glScalef(length,1,height);		
-		drawSquare(1, 0,1,1);
+		drawSquare(1,colors[1].r,colors[1].g,colors[1].b);
 	glPopMatrix();
 
 	glPushMatrix();
 		//Floor
 		glTranslatef(length,0,width);
 		glScalef(length,1,width);		
-		drawSquare(1, 1,1,0);
+		drawSquare(1,colors[1].r,colors[1].g,colors[1].b);
 	glPopMatrix();
 
 	glPushMatrix();
 		//Ceiling
 		glTranslatef(length,2*height,width);
 		glScalef(length,1,width);		
-		drawSquare(1, 0,1,0);
+		drawSquare(1,colors[1].r,colors[1].g,colors[1].b);
 	glPopMatrix();
 }
 
