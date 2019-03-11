@@ -75,44 +75,7 @@ void drawSquare(GLfloat size, Color color){
 	glEnd();
 }
 
-void stair(GLfloat width, GLfloat length,GLfloat xIni,GLfloat yIni,GLfloat zIni, int nSteps){
-	float piso = length;
-	float largura = width;
-	float espelho = (0.4 - piso) / 2;
 
-	GLfloat Mov_XU = 0, Mov_XD=0, Mov_YD=0, Mov_YU=0, Mov_Z=0;
-
-	if (espelho < 0)
-	{
-		espelho = -espelho;
-	}
-	int i=0;
-	Mov_YU = espelho/2;
-	Mov_XU = largura;
-	for (i=0;i<nSteps;i++)
-	{
-		//down
-		glPushMatrix();
-		glTranslatef(Mov_XD+xIni, Mov_YD+yIni, Mov_Z+zIni);
-		glScalef(largura,piso,1);
-		drawSquare(1, RED);
-		glPopMatrix();
-		
-		
-		//up
-		glPushMatrix();
-		glTranslatef(Mov_XU+xIni, Mov_YU+yIni, Mov_Z+zIni);
-		glRotatef(90, 0, 0, 1);
-		glScalef(largura/5,piso,1);
-		drawSquare(1, GREEN);
-		glPopMatrix();
-
-		Mov_YU += espelho;
-		Mov_YD += espelho;
-		Mov_XD += (2*largura);
-		Mov_XU += 2*largura;
-	}
-}
 
 void walls(GLfloat width, GLfloat length, GLfloat height, Color colors[]){
 	glPushMatrix();
@@ -160,6 +123,49 @@ void walls(GLfloat width, GLfloat length, GLfloat height, Color colors[]){
 		glScalef(length,1,width);		
 		drawSquare(1,colors[5]);
 	glPopMatrix();
+}
+
+void stair(GLfloat width, GLfloat length,GLfloat height,GLfloat xIni,GLfloat yIni,GLfloat zIni, int nSteps){
+	float piso = length;
+	float largura = width;
+	float espelho = height; //(0.4 - piso) / 2;
+
+	GLfloat Mov_XU = 0, Mov_XD=0, Mov_YD=0, Mov_YU=0, Mov_Z=0;
+
+	/*if (espelho < 0)
+	{
+		espelho = -espelho;
+	}*/
+	int i=0;
+	Mov_YU = espelho/2;
+	Mov_XU = largura;
+	Color x[6] = {GREEN,RED,RED,RED,RED,RED};
+	Color y[6] = {GREEN,GREEN,GREEN,GREEN,GREEN,GREEN};
+	for (i=0;i<nSteps;i++)
+	{
+		//down
+		glPushMatrix();
+		glTranslatef(Mov_XD+xIni, Mov_YD+yIni, Mov_Z+zIni);
+		//glScalef(largura,0,piso);
+		//drawSquare(1,RED);
+		walls(piso,0.1,largura/5,x);//drawSquare(1, RED);
+		glPopMatrix();
+		
+		/*
+		//up
+		glPushMatrix();
+		glTranslatef(largura+Mov_XU+xIni, Mov_YU+yIni,piso+ Mov_Z+zIni);
+		glRotatef(90, 0, 0, 1);
+		glScalef(espelho/2,0,piso);
+		//walls(espelho/2,0.1,piso,y);
+		drawSquare(1,GREEN);
+		glPopMatrix();
+*/
+		Mov_YU += espelho;
+		Mov_YD += espelho/2;
+		Mov_XD += (2*largura);
+		Mov_XU += 2*largura;
+	}
 }
 
 void drawWallDoor(GLfloat width, GLfloat length, GLfloat height, GLfloat length_door, GLfloat height_door,GLfloat depth_wall, Color colors[]){
@@ -225,11 +231,11 @@ void drawScene(){
 	    glCullFace(GL_FRONT);  //glFrontFace(GL_CCW);
 
 	glPushMatrix();	
-		//stair(0.25, 0.2,0,0,0,10);
-		walls(width,length,height,room_colors);
-		drawWallDoor(width+2,length,height, length_door,height_door,depth_wall,wall_colors);
-		drawTable(table_width, table_length, table_thickness,table_xPos,table_yPos,table_zPos,table_colors);
-
+		stair(0.1, 0.2,0.075,0,0,0,5);
+		//walls(width,length,height,room_colors);
+		//drawWallDoor(width+2,length,height, length_door,height_door,depth_wall,wall_colors);
+		//drawTable(table_width, table_length, table_thickness,table_xPos,table_yPos,table_zPos,table_colors);
+		
 		glColor4f(BLUE2);
 		glutWireTeapot(1);		 
 	glPopMatrix();
