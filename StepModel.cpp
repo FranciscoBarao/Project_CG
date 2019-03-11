@@ -75,53 +75,64 @@ void drawSquare(GLfloat size, Color color){
 	glEnd();
 }
 
+void cube(GLfloat size,Color colors[]){
+	//Floor
+	glColor3f(colors[0].r, colors[0].g, colors[0].b);
+	glBegin(GL_POLYGON);
+		glVertex3f(size, -size, size);
+		glVertex3f(-size, -size, size);
+		glVertex3f(-size, -size, -size);
+		glVertex3f(size, -size, -size);
+	glEnd();
+	//Ceiling
+	glColor3f(colors[1].r, colors[1].g, colors[1].b);
+	glBegin(GL_POLYGON);
+		glVertex3f(size, size, size);
+		glVertex3f(-size, size, size);
+		glVertex3f(-size, size, -size);
+		glVertex3f(size, size, -size);
+	glEnd();
+	//Front
+	glColor3f(colors[2].r, colors[2].g, colors[2].b);
+	glBegin(GL_POLYGON);
+		glVertex3f(size, size, size);
+		glVertex3f(-size, size, size);
+
+		glVertex3f(-size, -size, size);
+		glVertex3f(size, -size, size);
+	glEnd();
+	//Back
+	glColor3f(colors[3].r, colors[3].g, colors[3].b);
+	glBegin(GL_POLYGON);
+		glVertex3f(size, size, -size);
+		glVertex3f(-size, size, -size);
+		glVertex3f(-size, -size, -size);
+		glVertex3f(size, -size, -size);
+	glEnd();
+	//Right
+	glColor3f(colors[4].r, colors[4].g, colors[4].b);
+	glBegin(GL_POLYGON);
+		glVertex3f(size, size, size);
+		glVertex3f(size, -size, size);
+		glVertex3f(size, -size, -size);
+		glVertex3f(size, size, -size);
+	glEnd();
+	//Left
+	glColor3f(colors[5].r, colors[5].g, colors[5].b);
+	glBegin(GL_POLYGON);
+		glVertex3f(-size, size, size);
+		glVertex3f(-size, -size, size);
+		glVertex3f(-size, -size, -size);
+		glVertex3f(-size, size, -size);
+	glEnd();
+}
 
 
 void walls(GLfloat width, GLfloat length, GLfloat height, Color colors[]){
 	glPushMatrix();
-		//Wall x/y
-		glTranslatef(0,height,width);
-		glRotatef(90, 0, 0, 1);
-		glScalef(height,1,width);
-		drawSquare(1,colors[0]);
-	glPopMatrix();
-
-	glPushMatrix();
-		//Wall x/y on 2z
-		glTranslatef(2*length,height,width);
-		glRotatef(90, 0, 0, 1);
-		glScalef(height,1,width);
-		drawSquare(1,colors[1]);
-	glPopMatrix();
-
-	glPushMatrix();
-		//Wall z/y
-		glTranslatef(length,height,0);
-		glRotatef(90, 1, 0, 0);
-		glScalef(length,1,height);
-		drawSquare(1,colors[2]);
-	glPopMatrix();
-
-	glPushMatrix();
-		//Wall z/y on 2x
-		glTranslatef(length,height,2*width);
-		glRotatef(90, 1, 0, 0);
-		glScalef(length,1,height);		
-		drawSquare(1,colors[3]);
-	glPopMatrix();
-
-	glPushMatrix();
-		//Floor
-		glTranslatef(length,0,width);
-		glScalef(length,1,width);		
-		drawSquare(1,colors[4]);
-	glPopMatrix();
-
-	glPushMatrix();
-		//Ceiling
-		glTranslatef(length,2*height,width);
-		glScalef(length,1,width);		
-		drawSquare(1,colors[5]);
+		glTranslatef(width/2,height/2,length/2);
+		glScalef(width,height,length);
+		cube(0.5,colors);
 	glPopMatrix();
 }
 
@@ -147,8 +158,8 @@ void stair(GLfloat width, GLfloat length,GLfloat height,GLfloat xIni,GLfloat yIn
 		glPushMatrix();
 		glTranslatef(Mov_XD+xIni, Mov_YD+yIni, Mov_Z+zIni);
 		//glScalef(largura,0,piso);
-		//drawSquare(1,RED);
-		walls(piso,0.1,largura/5,x);//drawSquare(1, RED);
+		//drawSquare(0.5,RED);
+		walls(piso,0.1,largura/5,x);//drawSquare(0.5, RED);
 		glPopMatrix();
 		
 		/*
@@ -158,7 +169,7 @@ void stair(GLfloat width, GLfloat length,GLfloat height,GLfloat xIni,GLfloat yIn
 		glRotatef(90, 0, 0, 1);
 		glScalef(espelho/2,0,piso);
 		//walls(espelho/2,0.1,piso,y);
-		drawSquare(1,GREEN);
+		drawSquare(0.5,GREEN);
 		glPopMatrix();
 */
 		Mov_YU += espelho;
@@ -168,62 +179,115 @@ void stair(GLfloat width, GLfloat length,GLfloat height,GLfloat xIni,GLfloat yIn
 	}
 }
 
-void drawWallDoor(GLfloat width, GLfloat length, GLfloat height, GLfloat length_door, GLfloat height_door,GLfloat depth_wall, Color colors[]){
+void drawWallDoor(GLfloat width, GLfloat length, GLfloat height, GLfloat width_door, GLfloat height_door,GLfloat depth_wall, Color colors[]){
+	glPushMatrix(); //Left wall
+		glTranslatef((width/2-width_door/2)/2, height/2, length);
+		glScalef(width/2-width_door/2,height,depth_wall);
+		cube(0.5,colors);
+	glPopMatrix();
+	
+	glPushMatrix(); //Right wall
+		glTranslatef((width-(width/2-width_door/2)/2), height/2, length);
+		glScalef(width/2-width_door/2,height,depth_wall);
+		cube(0.5,colors);
+	glPopMatrix();
+
+	glPushMatrix(); //Middle wall
+		glTranslatef(width/2, height_door+(height-height_door)/2, length);
+		glScalef(width_door, height - height_door, depth_wall);
+		cube(0.5,colors);
+	glPopMatrix();
+
+	glPushMatrix(); //Door
+		glTranslatef(width/2+width_door/2, height_door/2, length + depth_wall/2);
+		glRotatef(door_angle,0,1,0);
+		glTranslatef(-width_door/2, 0,0);
+
+		glScalef(width_door, height_door, depth_wall/2);
+		cube(0.5,colors);
+	glPopMatrix();
+}
+
+void drawTable(GLfloat width, GLfloat length, GLfloat thickness, GLfloat xPos,GLfloat yPos,GLfloat zPos, GLfloat legs_thickness, Color table_colors[]){
 	glPushMatrix();
-		glTranslatef(0,0, width);
-		walls(depth_wall,length/2-length_door/2, height, colors);
+		glTranslatef(xPos,yPos+2.5*thickness,zPos);
+		glColor4f(BLUE2);
+		glutWireTeapot(0.3);		 
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslatef(xPos,yPos,zPos);
+		glScalef(width,thickness,length);
+		cube(0.5,table_colors);
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslatef(xPos, yPos/2, zPos);
+		glScalef(legs_thickness,yPos,length/3);
+		cube(0.5,table_colors);
 	glPopMatrix();
 	
 	glPushMatrix();
-		glTranslatef(length + length_door,0,width);
-		walls(depth_wall,length/2 - length_door/2 ,height, colors);
-	glPopMatrix();
-
-	glPushMatrix();
-		glTranslatef(length - length_door, height-height_door , width);
-		walls(0.1,length_door, height - height_door, colors);
-	glPopMatrix();
-
-	glPushMatrix();
-		glTranslatef(length+length_door , 0, width+depth_wall/2);
-		glRotatef(door_angle,0,1,0);
-		glTranslatef(-2*length_door , 0, 0);
-		walls(0.05,length_door, height_door, colors);
-
+		glTranslatef(xPos, yPos/2, zPos);
+		glRotatef(90,0,1,0);
+		glScalef(legs_thickness,yPos,width/3);
+		cube(0.5,table_colors);
 	glPopMatrix();
 }
 
-void drawTable(GLfloat width, GLfloat length, GLfloat thickness, GLfloat xPos,GLfloat yPos,GLfloat zPos, Color colors[]){
+void drawChair(GLfloat width, GLfloat length, GLfloat thickness, GLfloat leg_size, GLfloat xPos,GLfloat yPos,GLfloat zPos, Color colors[]){
 	glPushMatrix();
-		glTranslatef(zPos,0.8,xPos);
-		walls(width,length,thickness,colors);
+		glTranslatef(xPos,yPos,zPos);
+		glScalef(width,thickness,length);
+		cube(0.5,colors);
 	glPopMatrix();
 
-	Color x[6] = {BLACK,BLACK,YELLOW,YELLOW,BLACK,BLACK};
-
 	glPushMatrix();
-		glTranslatef(zPos+width-0.3,0,xPos+length);
-		glPushMatrix();
-			walls(0.1,0.3,0.4,x);
-		glPopMatrix();
-		glPushMatrix();
-			glTranslatef(0.2, 0, 0.4);
-			glRotatef(90,0,1,0);
-			walls(0.1,0.3,0.4,x);
-		glPopMatrix();
+		glTranslatef(xPos,yPos+width/2,zPos-length/2);
+		glScalef(length,width*(3/2),thickness);
+		cube(0.5,colors);
 	glPopMatrix();
 
 
+	glPushMatrix();
+		glTranslatef(xPos+width/2-leg_size/2,yPos/2,zPos-length/2+leg_size/2);
+		glScalef(leg_size,yPos,leg_size);
+		cube(0.5,colors);
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslatef(xPos-width/2+leg_size/2,yPos/2,zPos-length/2+leg_size/2);
+		glScalef(leg_size,yPos,leg_size);
+		cube(0.5,colors);
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslatef(xPos-width/2+leg_size/2,yPos/2,zPos+length/2-leg_size/2);
+		glScalef(leg_size,yPos,leg_size);
+		cube(0.5,colors);
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslatef(xPos+width/2-leg_size/2,yPos/2,zPos+length/2-leg_size/2);
+		glScalef(leg_size,yPos,leg_size);
+		cube(0.5,colors);
+	glPopMatrix();
+
+	
+
+	
 }
 
 void drawScene(){
+	GLfloat width=8, length=16, height=4;
+	GLfloat depth_wall=0.1,width_door=1.5, height_door=2;
 
-	GLfloat width=10, length=5, height=3;
-	GLfloat depth_wall=0.1,length_door=1, height_door=1;
-	GLfloat table_width=1,table_length=1,table_thickness=0.05,table_xPos=17,table_yPos=1,table_zPos=7;
-	Color room_colors[6]= {CYAN,CYAN,GREEN,GREEN,PURPLE,YELLOW};
-	Color wall_colors[6] = {YELLOW,CYAN,PURPLE,CYAN,RED,CYAN};
-	Color table_colors[6] = {RED,RED,RED,RED,RED,RED};
+	GLfloat table_width=2,table_length=2,table_thickness=0.1, table_legs_thickness=0.2, table_xPos=7,table_yPos=0.8,table_zPos=15;
+	GLfloat chair_width=0.7, chair_length=0.7, chair_thickness=0.1,chair_leg_size=0.05;
+
+	Color room_colors[6]= {CYAN,CYAN,GREEN,GREEN,PURPLE,PURPLE};
+	Color wall_colors[6] = {YELLOW,YELLOW,RED,RED,YELLOW,YELLOW};
+	Color table_colors[6] = {YELLOW,YELLOW,RED,RED,RED,RED};
 
     if (frenteVisivel)
 	    glCullFace(GL_BACK);  //glFrontFace(GL_CW);
@@ -231,13 +295,16 @@ void drawScene(){
 	    glCullFace(GL_FRONT);  //glFrontFace(GL_CCW);
 
 	glPushMatrix();	
-		stair(0.1, 0.2,0.075,0,0,0,5);
-		//walls(width,length,height,room_colors);
-		//drawWallDoor(width+2,length,height, length_door,height_door,depth_wall,wall_colors);
-		//drawTable(table_width, table_length, table_thickness,table_xPos,table_yPos,table_zPos,table_colors);
+		//stair(0.1, 0.2,0.075,0,0,0,5);
 		
-		glColor4f(BLUE2);
-		glutWireTeapot(1);		 
+		walls(width,length,height,room_colors);
+		drawWallDoor(width,length/2,height, width_door,height_door,depth_wall,wall_colors);
+		drawTable(table_width, table_length, table_thickness, table_xPos,table_yPos,table_zPos, table_legs_thickness, table_colors);
+		drawChair(chair_width,chair_length,chair_thickness,chair_leg_size,7,0.4,14,table_colors);
+
+
+		//glColor4f(BLUE2);
+		//glutWireTeapot(1);		 
 	glPopMatrix();
 }
 
