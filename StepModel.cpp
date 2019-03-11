@@ -9,11 +9,11 @@ g++ a.cpp -lGL -lGLU -lglut -lm -o main*/
 #define BLUE2     0.0, 0.0, 1.0, 1.0
 #define RED2		 1.0, 0.0, 0.0, 1.0
 #define GREEN2    0.0, 1.0, 0.0, 1.0
-#define BLACK    0.0, 0.0, 0.0, 1.0
+#define BLACK2    0.0, 0.0, 0.0, 1.0
 struct Color{
 	GLfloat r,g,b;
 };
-Color RED,GREEN,BLUE,YELLOW,PURPLE,CYAN;
+Color RED,GREEN,BLUE,YELLOW,PURPLE,CYAN,BLACK;
 
 #define PI		 3.14159
 
@@ -35,7 +35,7 @@ GLboolean   visivel = 1;
 
 
 void inicializa(void){
-	glClearColor(BLACK);		//Apagar
+	glClearColor(BLACK2);		//Apagar
 	glEnable(GL_DEPTH_TEST);	//Profundidade
 	glShadeModel(GL_SMOOTH);	//Interpolacao de cores	
 
@@ -189,17 +189,32 @@ void drawWallDoor(GLfloat width, GLfloat length, GLfloat height, GLfloat length_
 
 void drawTable(GLfloat width, GLfloat length, GLfloat thickness, GLfloat xPos,GLfloat yPos,GLfloat zPos, Color colors[]){
 	glPushMatrix();
-		glTranslatef(zPos,0,xPos);
-		//glRotatef(90,1,0,0);
+		glTranslatef(zPos,0.8,xPos);
 		walls(width,length,thickness,colors);
 	glPopMatrix();
+
+	Color x[6] = {BLACK,BLACK,YELLOW,YELLOW,BLACK,BLACK};
+
+	glPushMatrix();
+		glTranslatef(zPos+width-0.3,0,xPos+length);
+		glPushMatrix();
+			walls(0.1,0.3,0.4,x);
+		glPopMatrix();
+		glPushMatrix();
+			glTranslatef(0.2, 0, 0.4);
+			glRotatef(90,0,1,0);
+			walls(0.1,0.3,0.4,x);
+		glPopMatrix();
+	glPopMatrix();
+
+
 }
 
 void drawScene(){
 
 	GLfloat width=10, length=5, height=3;
 	GLfloat depth_wall=0.1,length_door=1, height_door=1;
-	GLfloat table_width=0.5,table_length=0.5,table_thickness=0.1,table_xPos=2,table_yPos=1,table_zPos=2;
+	GLfloat table_width=1,table_length=1,table_thickness=0.05,table_xPos=17,table_yPos=1,table_zPos=7;
 	Color room_colors[6]= {CYAN,CYAN,GREEN,GREEN,PURPLE,YELLOW};
 	Color wall_colors[6] = {YELLOW,CYAN,PURPLE,CYAN,RED,CYAN};
 	Color table_colors[6] = {RED,RED,RED,RED,RED,RED};
@@ -210,11 +225,11 @@ void drawScene(){
 	    glCullFace(GL_FRONT);  //glFrontFace(GL_CCW);
 
 	glPushMatrix();	
-		//stair(0.25, 0.2,-1,-1,-1,10);
+		//stair(0.25, 0.2,0,0,0,10);
 		walls(width,length,height,room_colors);
 		drawWallDoor(width+2,length,height, length_door,height_door,depth_wall,wall_colors);
 		drawTable(table_width, table_length, table_thickness,table_xPos,table_yPos,table_zPos,table_colors);
-		
+
 		glColor4f(BLUE2);
 		glutWireTeapot(1);		 
 	glPopMatrix();
@@ -322,6 +337,7 @@ int main(int argc, char** argv){
 	YELLOW = {1,1,0}; 
 	PURPLE = {1,0,1}; 
 	CYAN   = {0,1,1};
+	BLACK  = {0,0,0};
 	inicializa();
 	
 	glutSpecialFunc(teclasNotAscii); 
