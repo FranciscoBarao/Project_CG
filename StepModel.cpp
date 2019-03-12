@@ -33,8 +33,6 @@ GLfloat door_angle = 0;
 GLboolean frenteVisivel = 1;
 GLboolean visivel = 1;
 
-GLfloat xIniStair = 0, yIniStair = 0, ZIniStair = 0, xEndStair = 0, yEndStair = 0, zEndStair = 0;
-
 void inicializa(void)
 {
 	glClearColor(BLACK2);	//Apagar
@@ -146,7 +144,7 @@ void stair(GLfloat width, GLfloat length, GLfloat height, GLfloat xIni, GLfloat 
 	float largura = width;
 	float espelho = height; //(0.4 - piso) / 2;
 
-	GLfloat Mov_XD = 0, Mov_YD = 0, Mov_Z = 0;
+	GLfloat Mov_XD = 0, Mov_YD = espelho/4, Mov_Z = 0;
 
 	/*if (espelho < 0)
 	{
@@ -157,43 +155,40 @@ void stair(GLfloat width, GLfloat length, GLfloat height, GLfloat xIni, GLfloat 
 	Color y[6] = {GREEN, GREEN, GREEN, GREEN, GREEN, GREEN};
 	for (i = 0; i < nSteps; i++)
 	{
-		if (i == 0)
-		{
-			xIniStair = Mov_XD + xIni;
-			yIniStair = Mov_YD + yIni;
-			ZIniStair = Mov_Z + zIni;
-			//Guardar coordenadas
-		}
-		if (i < nSteps)
-		{
-			xEndStair = Mov_XD + xIni;
-			yEndStair = Mov_YD + yIni;
-			zEndStair = Mov_Z + zIni;
-			//guardar coordenadas!
 
-			//down
-			glPushMatrix();
-			glTranslatef(Mov_XD + xIni+piso, Mov_YD + yIni, Mov_Z + zIni+largura);
-			glScalef(piso,espelho/4,largura);
-			// 	drawSquare(0.5,RED);
-			//walls(largura, piso, espelho / 4, x); //drawSquare(1, RED);
-			cube(1,x);
-			glPopMatrix();
-
-			Mov_YD += espelho / 2;
-			Mov_XD += (2 * piso);
-		}
-		xEndStair = Mov_XD + xIni;
-		yEndStair = Mov_YD + yIni;
-		zEndStair = Mov_Z + zIni;
 		//guardar coordenadas!
+
+		//down
+		glPushMatrix();
+		glTranslatef(Mov_XD + xIni + piso, Mov_YD + yIni, Mov_Z + zIni + largura);
+		glScalef(piso, espelho / 4, largura);
+		// 	drawSquare(0.5,RED);
+		//walls(largura, piso, espelho / 4, x); //drawSquare(1, RED);
+		cube(1, x);
+		glPopMatrix();
+
+		if (i > 0)
+		{
+			glColor3f(1, 0, 0);
+			glBegin(GL_POLYGON);
+			glVertex3f(Mov_XD + xIni , Mov_YD + yIni, Mov_Z + zIni + 2*largura);
+			glVertex3f(Mov_XD + xIni + 2*piso, Mov_YD + yIni, Mov_Z + zIni + 2*largura);
+			glVertex3f(Mov_XD + xIni + 2*piso, 0, Mov_Z + zIni + 2*largura);
+			glVertex3f(Mov_XD + xIni ,0, Mov_Z + zIni + 2*largura);
+			glEnd();
+		}
+
+		Mov_YD += espelho / 2;
+		Mov_XD += (2 * piso);
+/*
+		glColor3f(1, 0, 0);
+		glBegin(GL_POLYGON);													 // Primitiva para desenhar um polígono
+		glVertex3f(xIniStair, 0, ZIniStair + 2 * largura);						 // define o primeiro vértice do polígono
+		glVertex3f(xEndStair, yEndStair - espelho / 2, zEndStair + 2 * largura); // define o segundo vértice do polígono
+		glVertex3f(xEndStair, zIni, zEndStair + 2 * largura);					 // define o terceiro vértice do polígono
+		glEnd();
+*/		
 	}
-	glColor3f(1,0,0);
-	glBegin(GL_POLYGON);									   // Primitiva para desenhar um polígono
-		glVertex3f(xIniStair, yIniStair, ZIniStair+2*largura); // define o primeiro vértice do polígono
-		glVertex3f(xEndStair, yEndStair, zEndStair+2*largura ); // define o segundo vértice do polígono
-		glVertex3f(xEndStair, zIni, zEndStair+2*largura);	  // define o terceiro vértice do polígono
-	glEnd();
 }
 void drawWallDoor(GLfloat width, GLfloat length, GLfloat height, GLfloat width_door, GLfloat height_door, GLfloat depth_wall, Color colors[])
 {
@@ -301,10 +296,10 @@ void drawScene()
 	GLfloat chair_width = 0.7, chair_length = 0.7, chair_thickness = 0.1, chair_leg_size = 0.05;
 
 	/*Mudar nome destas merdas para stair_sth*/
-	GLfloat largura = 0.2, piso = 0.5;
-	GLint nSteps = (height /piso )-1;
+	GLfloat largura = 0.7, piso = 0.4;
+	GLint nSteps = (height / piso) - 1;
 	GLfloat espelho = height / nSteps;
-	GLfloat StairIniX = piso, StairIniY = 0, StairIniZ = 0;
+	GLfloat StairIniX = piso*2, StairIniY = 0, StairIniZ = 0;
 
 	Color room_colors[6] = {CYAN, CYAN, GREEN, GREEN, PURPLE, PURPLE};
 	Color wall_colors[6] = {YELLOW, YELLOW, RED, RED, YELLOW, YELLOW};
@@ -316,11 +311,11 @@ void drawScene()
 		glCullFace(GL_FRONT); //glFrontFace(GL_CCW);
 
 	glPushMatrix();
-	stair(largura, piso,espelho,StairIniX,StairIniY,StairIniZ,nSteps);
-	walls(width, length, height, room_colors);
-	drawWallDoor(width, length / 2, height, width_door, height_door, depth_wall, wall_colors);
-	drawTable(table_width, table_length, table_thickness, table_xPos, table_yPos, table_zPos, table_legs_thickness, table_colors);
-	drawChair(chair_width, chair_length, chair_thickness, chair_leg_size, 7, 0.4, 14, table_colors);
+	stair(largura, piso, espelho, StairIniX, StairIniY, StairIniZ, nSteps);
+	//walls(width, length, height, room_colors);
+	//drawWallDoor(width, length / 2, height, width_door, height_door, depth_wall, wall_colors);
+	//drawTable(table_width, table_length, table_thickness, table_xPos, table_yPos, table_zPos, table_legs_thickness, table_colors);
+	//drawChair(chair_width, chair_length, chair_thickness, chair_leg_size, 7, 0.4, 14, table_colors);
 	glPopMatrix();
 }
 
