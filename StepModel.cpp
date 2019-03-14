@@ -217,7 +217,6 @@ void stair(GLfloat width, GLfloat length, GLfloat height, GLfloat xIni, GLfloat 
 	}
 }
 
-
 void drawWallDoor(GLfloat width, GLfloat length, GLfloat height, GLfloat width_door, GLfloat height_door, GLfloat depth_wall, GLfloat door_xPos, Color colors[]){
 	glPushMatrix(); //Left wall
 	glTranslatef(door_xPos + width_door/2 + (width-(door_xPos + width_door/2))/2, height / 2, length);
