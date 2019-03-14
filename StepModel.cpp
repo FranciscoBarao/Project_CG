@@ -33,8 +33,6 @@ GLfloat window_slide = 0;
 GLboolean frenteVisivel = 1;
 GLboolean visivel = 1;
 
-GLfloat xIniStair = 0, yIniStair = 0, ZIniStair = 0, xEndStair = 0, yEndStair = 0, zEndStair = 0;
-
 void inicializa(void)
 {
 	glClearColor(BLACK2);	//Apagar
