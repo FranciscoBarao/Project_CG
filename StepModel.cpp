@@ -4,6 +4,7 @@ g++ a.cpp -lGL -lGLU -lglut -lm -o main*/
 #include <stdio.h>
 #include <math.h>
 #include <GL/glut.h>
+#define M_PI 3.14159265358979323846
 
 //--------------------------------- Definir cores
 #define BLUE2 0.0, 0.0, 1.0, 1.0
@@ -168,7 +169,7 @@ void stair(GLfloat width, GLfloat length, GLfloat height, GLfloat xIni, GLfloat 
 	float largura = width;
 	float espelho = height; //(0.4 - piso) / 2;
 
-	GLfloat Mov_XD = 0, Mov_YD = espelho/4, Mov_Z = 0;
+	GLfloat Mov_XD = 0, Mov_YD = espelho / 4, Mov_Z = 0;
 
 	/*if (espelho < 0)
 	{
@@ -179,40 +180,67 @@ void stair(GLfloat width, GLfloat length, GLfloat height, GLfloat xIni, GLfloat 
 	Color y[6] = {GREEN, GREEN, GREEN, GREEN, GREEN, GREEN};
 	for (i = 0; i < nSteps; i++)
 	{
-
-		//guardar coordenadas!
-
-		//down
+		if(i !=0){
+			Mov_YD += espelho / 2;
+			Mov_XD += (2 * piso);
+		}
+		if (i == 0)
+		{
+			glPushMatrix();
+			glTranslatef(xIni + 0.1 * piso, yIni + espelho + espelho / 2, zIni + largura * 2 - 0.05 * largura);
+			glScalef(0.1 * piso, espelho, 0.05 * largura);
+			cube(1, x);
+			glPopMatrix();
+		}
 		glPushMatrix();
 		glTranslatef(Mov_XD + xIni + piso, Mov_YD + yIni, Mov_Z + zIni + largura);
 		glScalef(piso, espelho / 4, largura);
-		// 	drawSquare(0.5,RED);
-		//walls(largura, piso, espelho / 4, x); //drawSquare(1, RED);
 		cube(1, x);
 		glPopMatrix();
+
+		if(i!=0 && i<nSteps/2){
+			glPushMatrix();
+			glTranslatef(xIni + 0.05 * piso+Mov_XD, yIni +Mov_YD+espelho+espelho/8, zIni + largura * 2 - 0.05 * largura+Mov_Z);
+			glScalef(0.05 * piso, espelho, 0.05 * largura);
+			cube(1, x);
+			glPopMatrix();
+		}
+		if(i>nSteps/2 -1 && i<nSteps ){
+			glPushMatrix();
+			glTranslatef(xIni + 0.05 * piso+Mov_XD, yIni +Mov_YD+espelho-espelho/8, zIni + largura * 2 - 0.05 * largura+Mov_Z);
+			glScalef(0.05 * piso, espelho, 0.05 * largura);
+			cube(1, x);
+			glPopMatrix();
+		}
 
 		if (i > 0)
 		{
 			glColor3f(1, 0, 0);
 			glBegin(GL_POLYGON);
-			glVertex3f(Mov_XD + xIni , Mov_YD + yIni, Mov_Z + zIni + 2*largura);
-			glVertex3f(Mov_XD + xIni + 2*piso, Mov_YD + yIni, Mov_Z + zIni + 2*largura);
-			glVertex3f(Mov_XD + xIni + 2*piso, 0, Mov_Z + zIni + 2*largura);
-			glVertex3f(Mov_XD + xIni ,0, Mov_Z + zIni + 2*largura);
+			glVertex3f(Mov_XD + xIni, Mov_YD + yIni, Mov_Z + zIni + 2 * largura);
+			glVertex3f(Mov_XD + xIni + 2 * piso, Mov_YD + yIni, Mov_Z + zIni + 2 * largura);
+			glVertex3f(Mov_XD + xIni + 2 * piso, 0, Mov_Z + zIni + 2 * largura);
+			glVertex3f(Mov_XD + xIni, 0, Mov_Z + zIni + 2 * largura);
 			glEnd();
 		}
-
-		Mov_YD += espelho / 2;
-		Mov_XD += (2 * piso);
-/*
-		glColor3f(1, 0, 0);
-		glBegin(GL_POLYGON);													 // Primitiva para desenhar um polígono
-		glVertex3f(xIniStair, 0, ZIniStair + 2 * largura);						 // define o primeiro vértice do polígono
-		glVertex3f(xEndStair, yEndStair - espelho / 2, zEndStair + 2 * largura); // define o segundo vértice do polígono
-		glVertex3f(xEndStair, zIni, zEndStair + 2 * largura);					 // define o terceiro vértice do polígono
-		glEnd();
-*/		
+		if (i == (nSteps - 1))
+		{
+			glPushMatrix();
+			glTranslatef(Mov_XD + xIni + piso * 2 - 0.1 * piso, Mov_YD + yIni + espelho + espelho / 2 - espelho / 4, zIni+largura * 2 - 0.05 * largura);
+			glScalef(0.1 * piso, espelho, 0.05 * largura);
+			cube(1, x);
+			glPopMatrix();
+		}
 	}
+	GLfloat angle = (atan((Mov_YD+yIni)/(Mov_XD + xIni + piso))*360)/(2*M_PI);
+	GLfloat size =  pow(Mov_XD/2,2) + pow(Mov_YD,2); 
+	size = sqrt(size);
+	glPushMatrix();
+	glTranslatef(xIni +Mov_XD/2+piso, Mov_YD + yIni + espelho / 2-espelho/4, zIni + largura * 2 - 0.05 * largura);
+	glRotatef(angle,0,0,1);
+	glScalef(size, espelho/8, 0.05 * largura);
+	cube(1, x);
+	glPopMatrix();
 }
 
 void drawWallDoor(GLfloat width, GLfloat length, GLfloat height, GLfloat width_door, GLfloat height_door, GLfloat depth_wall, GLfloat door_xPos, Color colors[]){
@@ -361,7 +389,7 @@ void drawScene(){
 	GLfloat largura = 0.7, piso = 0.4;
 	GLint nSteps = (height / piso) - 1;
 	GLfloat espelho = height / nSteps;
-	GLfloat StairIniX = piso*2, StairIniY = 0, StairIniZ = 0;
+	GLfloat StairIniX = piso * 2, StairIniY = 0, StairIniZ = 0;
 
 	Color room_colors[6] = {CYAN, CYAN, GREEN, GREEN, PURPLE, PURPLE};
 	Color wall_colors[6] = {YELLOW, YELLOW, RED, RED, YELLOW, YELLOW};
