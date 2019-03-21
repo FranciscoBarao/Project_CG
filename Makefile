@@ -6,8 +6,10 @@ CFLAGS = -Wall -pedantic -ansi
 all: main
 
 main: StepModel.cpp
-		g++ StepModel.cpp $(CXXFLAGS) main
+		g++ StepModel.cpp rgb $(CXXFLAGS) main
 		./main
 
+rgb:
+	RgbImage.cpp
 clean: 
 		rm -rf *o main
