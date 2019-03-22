@@ -27,7 +27,7 @@ GLfloat xC = 10.0, yC = 10.0, zC = 10.0; //.. Mundo  (unidades mundo)
 
 //------------------------------------------------------------ Observador
 GLfloat aVisao = PI * 1.5; //Porque PI*1.5?  aproximadamente 5
-GLfloat obsP[] = {4, 1, 4};
+GLfloat obsP[] = {4, 1, 13};
 GLfloat obsT[] = {0, 1, 0};
 
 GLfloat width = 8, length = 16, height = 4;
@@ -503,11 +503,12 @@ void display(void){
 	glutSwapBuffers();
 }
 bool check_collisions_walls(GLfloat x, GLfloat z){
+	printf("%f,%f\n",obsP[0],obsP[2]);
 	//0.2  +/- valor maximo que pode vir a somar.. aproxima do valor real para nao deixar ver dentro das paredes
-	/*return ((x >= 0+0.2) && (x <= width-0.2) 
-		&&  (z >= 0+0.2) && (z <= length-0.2));*/
+	return ((x >= 0.2) && (x <= width-0.2) 
+		&&  (z >= 0.2) && (z <= length-0.2));
 
-	return true;
+	//return true;
 }
 
 void keyboard(unsigned char key, int x, int y){
@@ -550,12 +551,13 @@ void keyboard(unsigned char key, int x, int y){
 	case 'l':
 		in_stairs = in_stairs * -1;
 		if (in_stairs<0) {
-			obsP[0] = 0;
+			obsP[0] = 4;
 			obsP[1] = 1;
 			obsP[2] = 5;
+
 			obsT[0] = 0;
-			obsT[1] = 1;
-			obsT[2] = 0;
+			obsT[1] = 0;
+			obsT[2] = 1;
 		}
 		else
 		{
@@ -575,12 +577,12 @@ void teclasNotAscii(int key, int x, int y)
 {
 	if (in_stairs == -1)
 	{
-		if (key == GLUT_KEY_UP)
+		if (key == GLUT_KEY_UP && check_collisions_walls(obsP[0]+ 0.2 * cos(aVisao),obsP[2]+ 0.2 * sin(aVisao)))
 		{
 			obsP[0] += 0.2 * cos(aVisao);
 			obsP[2] += 0.2 * sin(aVisao);
 		}
-		if (key == GLUT_KEY_DOWN)
+		if (key == GLUT_KEY_DOWN && check_collisions_walls(obsP[0]- 0.2 * cos(aVisao),obsP[2]- 0.2 * sin(aVisao)))
 		{
 			obsP[0] -= 0.2 * cos(aVisao);
 			obsP[2] -= 0.2 * sin(aVisao);
@@ -598,11 +600,11 @@ void teclasNotAscii(int key, int x, int y)
 	}
 	else
 	{
-		if (key == GLUT_KEY_UP){
+		if (key == GLUT_KEY_UP && check_collisions_walls(obsP[0]+stair_piso*2,obsP[2]+ stair_espelho)){
 			obsP[0] += stair_piso*2;
 			obsP[1] += stair_espelho;
 		}
-		if(key == GLUT_KEY_DOWN){
+		if(key == GLUT_KEY_DOWN && check_collisions_walls(obsP[0]-stair_piso*2,obsP[2]-stair_espelho)){
 			obsP[0] -= stair_piso*2;
 			obsP[1] -= stair_espelho;
 		}
@@ -619,7 +621,7 @@ void teclasNotAscii(int key, int x, int y)
 		obsT[2] = obsP[2] +2 * sin(aVisao);
 		obsT[1] = obsP[1];
 	}
-	
+
 	/*
 		Virar o User
 
