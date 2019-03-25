@@ -6,7 +6,6 @@ g++ a.cpp -lGL -lGLU -lglut -lm -o main*/
 #include <GL/glut.h>
 #include "RgbImage.h"
 
-
 #define M_PI 3.14159265358979323846
 
 //--------------------------------- Definir cores
@@ -14,7 +13,8 @@ g++ a.cpp -lGL -lGLU -lglut -lm -o main*/
 #define RED2 1.0, 0.0, 0.0, 1.0
 #define GREEN2 0.0, 1.0, 0.0, 1.0
 #define BLACK2 0.0, 0.0, 0.0, 1.0
-struct Color{
+struct Color
+{
 	GLfloat r, g, b;
 };
 Color RED, GREEN, BLUE, YELLOW, PURPLE, CYAN, BLACK;
@@ -27,7 +27,7 @@ GLfloat xC = 10.0, yC = 10.0, zC = 10.0; //.. Mundo  (unidades mundo)
 
 //------------------------------------------------------------ Observador
 GLfloat aVisao = PI * 1.5; //Porque PI*1.5?  aproximadamente 5
-GLfloat obsP[] = {4, 1, 13};
+GLfloat obsP[] = {4, 1, 4};
 GLfloat obsT[] = {0, 1, 0};
 
 GLfloat width = 8, length = 16, height = 4;
@@ -40,31 +40,29 @@ GLboolean frenteVisivel = 1;
 GLboolean visivel = 1;
 int in_stairs = -1;
 
-
-GLuint   texture[4];
+GLuint texture[4];
 RgbImage imag;
 
+GLfloat stair_piso = 0, stair_largura = 0, stair_espelho = 0, stair_n_steps = 0, stair_foward = 0, stair_back = 0;
 
-GLfloat stair_piso = 0, stair_largura = 0, stair_espelho = 0, stair_n_steps = 0,stair_foward=0,stair_back = 0;
-
-
-void initTexturas(){   
+void initTexturas()
+{
 	//----------------------------------------- Floor
 	glGenTextures(1, &texture[0]);
 	glBindTexture(GL_TEXTURE_2D, texture[0]);
 	imag.LoadBmpFile("floor.bmp");
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);  
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, 
-		imag.GetNumCols(),
-		imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
-		imag.ImageData());  		   
+
+	glTexImage2D(GL_TEXTURE_2D, 0, 3,
+				 imag.GetNumCols(),
+				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+				 imag.ImageData());
 }
 
 void inicializa(void)
@@ -80,7 +78,8 @@ void inicializa(void)
 	glCullFace(GL_BACK);	//Mostrar so as da frente
 }
 
-void drawEixos(){
+void drawEixos()
+{
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Eixo X
 	glColor4f(RED2);
 	glBegin(GL_LINES);
@@ -101,7 +100,8 @@ void drawEixos(){
 	glEnd();
 }
 
-void drawSquare(GLfloat size, Color color){
+void drawSquare(GLfloat size, Color color)
+{
 	glColor3f(color.r, color.g, color.b);
 	glBegin(GL_POLYGON);
 	glVertex3f(-size, 0, -size);
@@ -111,7 +111,8 @@ void drawSquare(GLfloat size, Color color){
 	glEnd();
 }
 
-void cube(GLfloat size, Color colors[]){
+void cube(GLfloat size, Color colors[])
+{
 	//Floor
 	glColor3f(colors[0].r, colors[0].g, colors[0].b);
 	glBegin(GL_POLYGON);
@@ -152,7 +153,7 @@ void cube(GLfloat size, Color colors[]){
 	glVertex3f(size, -size, size);
 	glVertex3f(size, -size, -size);
 	glVertex3f(size, size, -size);
-	
+
 	glEnd();
 	//Left
 	glColor3f(colors[5].r, colors[5].g, colors[5].b);
@@ -164,19 +165,24 @@ void cube(GLfloat size, Color colors[]){
 	glEnd();
 }
 
-void cubeTest(GLfloat size, Color colors[]){
+void cubeTest(GLfloat size, Color colors[])
+{
 	//Floor
 	glPushMatrix();
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D,texture[0]);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
 
-		glBegin(GL_POLYGON);
-			glVertex3f(-size, -size, size);  glTexCoord2f(0.0f,0.0f);
-			glVertex3f(size, -size, size);   glTexCoord2f(1.0f,0.0f);
-			glVertex3f(size, -size, -size);	 glTexCoord2f(1.0f,1.0f);
-			glVertex3f(-size, -size, -size); glTexCoord2f(0.0f,1.0f);
-		glEnd();
-		glDisable(GL_TEXTURE_2D);
+	glBegin(GL_POLYGON);
+	glVertex3f(-size, -size, size);
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(size, -size, size);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(size, -size, -size);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f(-size, -size, -size);
+	glTexCoord2f(0.0f, 1.0f);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
 
 	//Back
@@ -194,7 +200,7 @@ void cubeTest(GLfloat size, Color colors[]){
 	glVertex3f(size, -size, size);
 	glVertex3f(size, -size, -size);
 	glVertex3f(size, size, -size);
-	
+
 	glEnd();
 	//Left
 	glColor3f(colors[5].r, colors[5].g, colors[5].b);
@@ -252,7 +258,7 @@ void stair(GLfloat width, GLfloat length, GLfloat height, GLfloat xIni, GLfloat 
 		{
 			glColor3f(1, 0, 0);
 			glBegin(GL_POLYGON);
-			glVertex3f(Mov_XD + xIni, Mov_YD + yIni, Mov_Z + zIni + 2 * largura); 
+			glVertex3f(Mov_XD + xIni, Mov_YD + yIni, Mov_Z + zIni + 2 * largura);
 			glVertex3f(Mov_XD + xIni + 2 * piso, Mov_YD + yIni, Mov_Z + zIni + 2 * largura);
 			glVertex3f(Mov_XD + xIni + 2 * piso, 0, Mov_Z + zIni + 2 * largura);
 			glVertex3f(Mov_XD + xIni, 0, Mov_Z + zIni + 2 * largura);
@@ -262,23 +268,22 @@ void stair(GLfloat width, GLfloat length, GLfloat height, GLfloat xIni, GLfloat 
 		if (i == (nSteps - 1))
 		{
 			glPushMatrix();
-			glTranslatef(Mov_XD + xIni + piso * 2 - 0.1 * piso, Mov_YD + yIni + espelho + espelho / 2 + espelho/8, zIni + largura * 2 - 0.05 * largura);
-			glScalef(0.1 * piso, espelho + espelho/8, 0.05 * largura);
+			glTranslatef(Mov_XD + xIni + piso * 2 - 0.1 * piso, Mov_YD + yIni + espelho + espelho / 2 + espelho / 8, zIni + largura * 2 - 0.05 * largura);
+			glScalef(0.1 * piso, espelho + espelho / 8, 0.05 * largura);
 			cube(1, x);
 			glPopMatrix();
 
-			glColor3f(1,0,0);
+			glColor3f(1, 0, 0);
 			glBegin(GL_POLYGON);
-			glVertex3f(Mov_XD+ xIni+2*piso,Mov_YD+yIni,Mov_Z+zIni);
-			glVertex3f(Mov_XD+xIni+2*piso,Mov_YD+yIni,Mov_Z+zIni+2*largura);
-			glVertex3f(Mov_XD+xIni+2*piso,0,Mov_Z+zIni+2*largura);
-			glVertex3f(Mov_XD+ xIni+2*piso,0,Mov_Z+zIni);
+			glVertex3f(Mov_XD + xIni + 2 * piso, Mov_YD + yIni, Mov_Z + zIni);
+			glVertex3f(Mov_XD + xIni + 2 * piso, Mov_YD + yIni, Mov_Z + zIni + 2 * largura);
+			glVertex3f(Mov_XD + xIni + 2 * piso, 0, Mov_Z + zIni + 2 * largura);
+			glVertex3f(Mov_XD + xIni + 2 * piso, 0, Mov_Z + zIni);
 			glEnd();
-
 		}
 	}
 	GLfloat angle = (atan((((espelho / 2) * nSteps)) / ((piso * (nSteps)))) * 360) / (2 * M_PI);
-	GLfloat size = pow((((espelho / 2) * nSteps) +1)/ 2, 2) + pow((piso * (nSteps + 2)), 2);
+	GLfloat size = pow((((espelho / 2) * nSteps) + 1) / 2, 2) + pow((piso * (nSteps + 2)), 2);
 	size = sqrt(size);
 	glPushMatrix();
 	glTranslatef(xIni + Mov_XD / 2 + piso, Mov_YD - espelho * 4 - espelho / 8, zIni + largura * 2 - 0.05 * largura);
@@ -288,16 +293,17 @@ void stair(GLfloat width, GLfloat length, GLfloat height, GLfloat xIni, GLfloat 
 	glPopMatrix();
 }
 
-void drawWallDoor(GLfloat width, GLfloat length, GLfloat height, GLfloat width_door, GLfloat height_door, GLfloat depth_wall, GLfloat door_xPos, Color colors[]){
+void drawWallDoor(GLfloat width, GLfloat length, GLfloat height, GLfloat width_door, GLfloat height_door, GLfloat depth_wall, GLfloat door_xPos, Color colors[])
+{
 	glPushMatrix(); //Left wall
-	glTranslatef(door_xPos + width_door/2 + (width-(door_xPos + width_door/2))/2, height / 2, length);
-	glScalef(width-(door_xPos + width_door/2), height, depth_wall);
+	glTranslatef(door_xPos + width_door / 2 + (width - (door_xPos + width_door / 2)) / 2, height / 2, length);
+	glScalef(width - (door_xPos + width_door / 2), height, depth_wall);
 	cube(0.5, colors);
 	glPopMatrix();
 
 	glPushMatrix(); //Right wall
-	glTranslatef((door_xPos - width_door/2)/2, height / 2, length);
-	glScalef(door_xPos - width_door/2, height, depth_wall);
+	glTranslatef((door_xPos - width_door / 2) / 2, height / 2, length);
+	glScalef(door_xPos - width_door / 2, height, depth_wall);
 	cube(0.5, colors);
 	glPopMatrix();
 
@@ -308,7 +314,7 @@ void drawWallDoor(GLfloat width, GLfloat length, GLfloat height, GLfloat width_d
 	glPopMatrix();
 
 	glPushMatrix(); //Door
-	glTranslatef(door_xPos + width_door/ 2, height_door / 2, length + depth_wall / 2);
+	glTranslatef(door_xPos + width_door / 2, height_door / 2, length + depth_wall / 2);
 	glRotatef(door_angle, 0, 1, 0);
 	glTranslatef(-width_door / 2, 0, 0);
 
@@ -316,70 +322,70 @@ void drawWallDoor(GLfloat width, GLfloat length, GLfloat height, GLfloat width_d
 	cube(0.5, colors);
 	glPopMatrix();
 }
-void drawWallWindow(GLfloat width, GLfloat length, GLfloat height, GLfloat width_window, GLfloat height_window,  GLfloat depth_wall, GLfloat window_xPos, GLfloat window_yPos, Color colors[]){
+void drawWallWindow(GLfloat width, GLfloat length, GLfloat height, GLfloat width_window, GLfloat height_window, GLfloat depth_wall, GLfloat window_xPos, GLfloat window_yPos, Color colors[])
+{
 	glPushMatrix(); //Left wall
-		glTranslatef(window_xPos + width_window/2 + (width-(window_xPos + width_window/2))/2, height / 2, length);
-		glScalef(width-(window_xPos + width_window/2), height, depth_wall);
-		cube(0.5, colors);
+	glTranslatef(window_xPos + width_window / 2 + (width - (window_xPos + width_window / 2)) / 2, height / 2, length);
+	glScalef(width - (window_xPos + width_window / 2), height, depth_wall);
+	cube(0.5, colors);
 	glPopMatrix();
 
 	glPushMatrix(); //Right wall
-		glTranslatef((window_xPos - width_window/2)/2, height / 2, length);
-		glScalef(window_xPos - width_window/2, height, depth_wall);
-		cube(0.5, colors);
+	glTranslatef((window_xPos - width_window / 2) / 2, height / 2, length);
+	glScalef(window_xPos - width_window / 2, height, depth_wall);
+	cube(0.5, colors);
 	glPopMatrix();
 
 	glPushMatrix(); //Middle wall Up
-		glTranslatef(window_xPos, window_yPos+height_window/2+(height - (window_yPos+height_window/2))/2, length);
-		glScalef(width_window, height - (window_yPos+height_window/2), depth_wall);
-		cube(0.5, colors);
+	glTranslatef(window_xPos, window_yPos + height_window / 2 + (height - (window_yPos + height_window / 2)) / 2, length);
+	glScalef(width_window, height - (window_yPos + height_window / 2), depth_wall);
+	cube(0.5, colors);
 	glPopMatrix();
 
 	glPushMatrix(); //Middle wall Down
-		glTranslatef(window_xPos, (window_yPos - height_window/2)/2, length);
-		glScalef(width_window, window_yPos-height_window/2, depth_wall);
-		cube(0.5, colors);
+	glTranslatef(window_xPos, (window_yPos - height_window / 2) / 2, length);
+	glScalef(width_window, window_yPos - height_window / 2, depth_wall);
+	cube(0.5, colors);
 	glPopMatrix();
 
 	glPushMatrix(); //Window
-	glTranslatef(window_xPos, window_yPos+window_slide, length + depth_wall / 2);
-	glScalef(width_window, height_window-window_slide, depth_wall / 2);
+	glTranslatef(window_xPos, window_yPos + window_slide, length + depth_wall / 2);
+	glScalef(width_window, height_window - window_slide, depth_wall / 2);
 	cube(0.5, colors);
 	glPopMatrix();
 }
 
-void drawCeiling(GLfloat width, GLfloat length, GLfloat height, GLfloat width_window, GLfloat height_window,  GLfloat depth_wall, GLfloat window_xPos, GLfloat window_yPos, Color colors[]){
+void drawCeiling(GLfloat width, GLfloat length, GLfloat height, GLfloat width_window, GLfloat height_window, GLfloat depth_wall, GLfloat window_xPos, GLfloat window_yPos, Color colors[])
+{
 	//before stair
 	glPushMatrix();
-	glTranslatef((width/2+2*stair_piso)/2,height,stair_largura);
-	glScalef(width/2+2*stair_piso,0,stair_largura*2);
-	cube(0.5,colors);
+	glTranslatef((width / 2 + 2 * stair_piso) / 2, height, stair_largura);
+	glScalef(width / 2 + 2 * stair_piso, 0, stair_largura * 2);
+	cube(0.5, colors);
 	glPopMatrix();
 	//after stair
 	glPushMatrix();
-	glTranslatef(width-(width/stair_back-stair_piso)/2,height,stair_largura);
-	glScalef(width/stair_back-stair_piso,0,stair_largura*2);
-	cube(0.5,colors);
+	glTranslatef(width - (stair_foward * stair_largura - stair_n_steps * stair_piso) / 2, height, stair_largura);
+	glScalef(((width - stair_foward * stair_piso - stair_n_steps * stair_piso) / 2) / 2, 0, stair_largura * 2);
+	cube(0.5, colors);
 	glPopMatrix();
 	//first floor right ceilling
 	glPushMatrix();
-	glTranslatef(width/2,height,length/2+stair_largura);
-	glScalef(width,0,length-stair_largura*2);
-	cube(0.5,colors);
+	glTranslatef(width / 2, height, length / 2 + stair_largura);
+	glScalef(width, 0, length - stair_largura * 2);
+	cube(0.5, colors);
 	glPopMatrix();
-
 
 	//second floor ceilling
 	glPushMatrix();
-	glTranslatef(width/2,height*2,length/2);
-	glScalef(width,0,length);
-	cube(0.5,colors);
+	glTranslatef(width / 2, height * 2, length / 2);
+	glScalef(width, 0, length);
+	cube(0.5, colors);
 	glPopMatrix();
-
-
 }
 
-void drawTable(GLfloat width, GLfloat length, GLfloat thickness, GLfloat xPos, GLfloat yPos, GLfloat zPos, GLfloat legs_thickness, Color table_colors[]){
+void drawTable(GLfloat width, GLfloat length, GLfloat thickness, GLfloat xPos, GLfloat yPos, GLfloat zPos, GLfloat legs_thickness, Color table_colors[])
+{
 
 	glPushMatrix();
 	glTranslatef(xPos, yPos, zPos);
@@ -400,7 +406,8 @@ void drawTable(GLfloat width, GLfloat length, GLfloat thickness, GLfloat xPos, G
 	cube(0.5, table_colors);
 	glPopMatrix();
 }
-void drawChair(GLfloat width, GLfloat length, GLfloat thickness, GLfloat leg_size, GLfloat xPos, GLfloat yPos, GLfloat zPos, Color colors[]){
+void drawChair(GLfloat width, GLfloat length, GLfloat thickness, GLfloat leg_size, GLfloat xPos, GLfloat yPos, GLfloat zPos, Color colors[])
+{
 	glPushMatrix();
 	glTranslatef(xPos, yPos, zPos);
 	glScalef(width, thickness, length);
@@ -438,16 +445,18 @@ void drawChair(GLfloat width, GLfloat length, GLfloat thickness, GLfloat leg_siz
 	glPopMatrix();
 }
 
-void walls(GLfloat width, GLfloat length, GLfloat height, GLfloat width_window, GLfloat height_window,  GLfloat depth_wall, GLfloat window_xPos, GLfloat window_yPos, Color room_colors[]){
+void walls(GLfloat width, GLfloat length, GLfloat height, GLfloat width_window, GLfloat height_window, GLfloat depth_wall, GLfloat window_xPos, GLfloat window_yPos, Color room_colors[])
+{
 	glPushMatrix();
-		glTranslatef(width / 2, height / 2, length / 2);
-		glScalef(width, height, length);
-		cubeTest(0.5, room_colors);
+	glTranslatef(width / 2, height / 2, length / 2);
+	glScalef(width, height, length);
+	cubeTest(0.5, room_colors);
 	glPopMatrix();
-	drawWallWindow(width, length, height, width_window, height_window, depth_wall, window_xPos,window_yPos, room_colors);
+	drawWallWindow(width, length, height, width_window, height_window, depth_wall, window_xPos, window_yPos, room_colors);
 }
 
-void drawScene(){
+void drawScene()
+{
 	GLfloat depth_wall = 0.1, width_door = 1.5, height_door = 2, door_xPos = 2;
 	GLfloat width_window = 1, height_window = 1.5, window_yPos = 2, window_xPos = 5;
 
@@ -461,7 +470,7 @@ void drawScene(){
 	GLfloat back = 6;
 	stair_foward = foward;
 	stair_back = back;
-	GLfloat espelho = height / (nSteps - 2), piso =((width - width / back) / 2) / nSteps;
+	GLfloat espelho = height / (nSteps - 2), piso = ((width - width / back) / 2) / nSteps;
 	GLfloat Stair_Ini_X = piso * foward, Stair_Ini_Y = 0, Stair_Ini_Z = 0;
 	nSteps = nSteps - (foward / 2);
 	stair_espelho = espelho, stair_largura = largura, stair_n_steps = nSteps, stair_piso = piso;
@@ -475,16 +484,17 @@ void drawScene(){
 		glCullFace(GL_FRONT); //glFrontFace(GL_CCW);
 
 	glPushMatrix();
-		stair(largura, piso, espelho, Stair_Ini_X, Stair_Ini_Y, Stair_Ini_Z, nSteps + 1);
-		walls(width, length, 2*height, width_window, height_window, depth_wall, window_xPos,window_yPos, room_colors);
-		drawWallDoor(width, length / 2, height, width_door, height_door, depth_wall, door_xPos, wall_colors);
-		drawTable(table_width, table_length, table_thickness, table_xPos, table_yPos, table_zPos, table_legs_thickness, table_colors);
-		drawChair(chair_width, chair_length, chair_thickness, chair_leg_size, 7, 0.4, 14, table_colors);
-		drawCeiling(width, length, height, width_window, height_window, depth_wall, window_xPos,window_yPos, room_colors);
+	stair(largura, piso, espelho, Stair_Ini_X, Stair_Ini_Y, Stair_Ini_Z, nSteps + 1);
+	walls(width, length, 2 * height, width_window, height_window, depth_wall, window_xPos, window_yPos, room_colors);
+	drawWallDoor(width, length / 2, height, width_door, height_door, depth_wall, door_xPos, wall_colors);
+	drawTable(table_width, table_length, table_thickness, table_xPos, table_yPos, table_zPos, table_legs_thickness, table_colors);
+	drawChair(chair_width, chair_length, chair_thickness, chair_leg_size, 7, 0.4, 14, table_colors);
+	drawCeiling(width, length, height, width_window, height_window, depth_wall, window_xPos, window_yPos, room_colors);
 
 	glPopMatrix();
 }
-void display(void){
+void display(void)
+{
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Apaga ecra/profundidade
 
@@ -502,16 +512,17 @@ void display(void){
 
 	glutSwapBuffers();
 }
-bool check_collisions_walls(GLfloat x, GLfloat z){
-	printf("%f,%f\n",obsP[0],obsP[2]);
+bool check_collisions_walls(GLfloat x, GLfloat z)
+{
 	//0.2  +/- valor maximo que pode vir a somar.. aproxima do valor real para nao deixar ver dentro das paredes
-	return ((x >= 0.2) && (x <= width-0.2) 
-		&&  (z >= 0.2) && (z <= length-0.2));
+	/*return ((x >= 0+0.2) && (x <= width-0.2) 
+		&&  (z >= 0+0.2) && (z <= length-0.2));*/
 
-	//return true;
+	return true;
 }
 
-void keyboard(unsigned char key, int x, int y){
+void keyboard(unsigned char key, int x, int y)
+{
 
 	switch (key)
 	{
@@ -533,35 +544,37 @@ void keyboard(unsigned char key, int x, int y){
 
 	case 'O':
 	case 'o':
-		if (door_angle > -90){
+		if (door_angle > -90)
+		{
 			door_angle -= 5;
-			window_slide+=0.1;
+			window_slide += 0.1;
 		}
 		glutPostRedisplay();
 		break;
 	case 'C':
 	case 'c':
-		if (door_angle < 0){
+		if (door_angle < 0)
+		{
 			door_angle += 5;
-			window_slide-=0.1;
+			window_slide -= 0.1;
 		}
 		glutPostRedisplay();
 		break;
 	case 'L':
 	case 'l':
 		in_stairs = in_stairs * -1;
-		if (in_stairs<0) {
+		if (in_stairs < 0)
+		{
 			obsP[0] = 4;
 			obsP[1] = 1;
-			obsP[2] = 5;
-
+			obsP[2] = 4;
 			obsT[0] = 0;
-			obsT[1] = 0;
-			obsT[2] = 1;
+			obsT[1] = 1;
+			obsT[2] = 0;
 		}
 		else
 		{
-			obsP[0] = stair_piso*4;
+			obsP[0] = stair_piso * 4;
 			obsP[1] = 1;
 			obsP[2] = stair_largura;
 		}
@@ -577,15 +590,17 @@ void teclasNotAscii(int key, int x, int y)
 {
 	if (in_stairs == -1)
 	{
-		if (key == GLUT_KEY_UP && check_collisions_walls(obsP[0]+ 0.2 * cos(aVisao),obsP[2]+ 0.2 * sin(aVisao)))
+		if (key == GLUT_KEY_UP)
 		{
 			obsP[0] += 0.2 * cos(aVisao);
 			obsP[2] += 0.2 * sin(aVisao);
+		
 		}
-		if (key == GLUT_KEY_DOWN && check_collisions_walls(obsP[0]- 0.2 * cos(aVisao),obsP[2]- 0.2 * sin(aVisao)))
+		if (key == GLUT_KEY_DOWN)
 		{
 			obsP[0] -= 0.2 * cos(aVisao);
 			obsP[2] -= 0.2 * sin(aVisao);
+			
 		}
 		if (key == GLUT_KEY_LEFT)
 		{
@@ -600,12 +615,14 @@ void teclasNotAscii(int key, int x, int y)
 	}
 	else
 	{
-		if (key == GLUT_KEY_UP && check_collisions_walls(obsP[0]+stair_piso*2,obsP[2]+ stair_espelho)){
-			obsP[0] += stair_piso*2;
+		if (key == GLUT_KEY_UP)
+		{
+			obsP[0] += stair_piso * 2;
 			obsP[1] += stair_espelho;
 		}
-		if(key == GLUT_KEY_DOWN && check_collisions_walls(obsP[0]-stair_piso*2,obsP[2]-stair_espelho)){
-			obsP[0] -= stair_piso*2;
+		if (key == GLUT_KEY_DOWN)
+		{
+			obsP[0] -= stair_piso * 2;
 			obsP[1] -= stair_espelho;
 		}
 
@@ -617,8 +634,8 @@ void teclasNotAscii(int key, int x, int y)
 		{
 			aVisao += 0.2;
 		}
-		obsT[0] = obsP[0] +2 * cos(aVisao);	
-		obsT[2] = obsP[2] +2 * sin(aVisao);
+		obsT[0] = obsP[0] + 2 * cos(aVisao);
+		obsT[2] = obsP[2] + 2 * sin(aVisao);
 		obsT[1] = obsP[1];
 	}
 
@@ -638,7 +655,8 @@ void teclasNotAscii(int key, int x, int y)
 	glutPostRedisplay();
 }
 
-int main(int argc, char **argv){
+int main(int argc, char **argv)
+{
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
