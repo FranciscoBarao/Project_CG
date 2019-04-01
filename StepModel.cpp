@@ -7,7 +7,6 @@ g++ a.cpp -lGL -lGLU -lglut -lm -o main*/
 #include "RgbImage.h"
 
 #define M_PI 3.14159265358979323846
-
 //--------------------------------- Definir cores
 #define BLUE2 0.0, 0.0, 1.0, 1.0
 #define RED2 1.0, 0.0, 0.0, 1.0
@@ -35,6 +34,7 @@ GLfloat width = 8, length = 16, height = 4;
 GLfloat angZoom = 90;
 GLfloat door_angle = 0;
 GLfloat window_slide = 0;
+
 
 GLboolean frenteVisivel = 1;
 GLboolean visivel = 1;
@@ -515,10 +515,10 @@ void display(void)
 bool check_collisions_walls(GLfloat x, GLfloat z)
 {
 	//0.2  +/- valor maximo que pode vir a somar.. aproxima do valor real para nao deixar ver dentro das paredes
-	/*return ((x >= 0+0.2) && (x <= width-0.2) 
-		&&  (z >= 0+0.2) && (z <= length-0.2));*/
+	return ((x >= 0.2) && (x <= width-0.2) 
+		&&  (z >= 0.2) && (z <= length-0.2));
 
-	return true;
+	//return true;
 }
 
 void keyboard(unsigned char key, int x, int y)
@@ -590,13 +590,13 @@ void teclasNotAscii(int key, int x, int y)
 {
 	if (in_stairs == -1)
 	{
-		if (key == GLUT_KEY_UP)
+		if (key == GLUT_KEY_UP && check_collisions_walls(obsP[0] + 0.2 * cos(aVisao), obsP[2] + 0.2 * sin(aVisao)))
 		{
 			obsP[0] += 0.2 * cos(aVisao);
 			obsP[2] += 0.2 * sin(aVisao);
 		
 		}
-		if (key == GLUT_KEY_DOWN)
+		if (key == GLUT_KEY_DOWN && check_collisions_walls(obsP[0] - 0.2 * cos(aVisao), obsP[2] - 0.2 * sin(aVisao)))
 		{
 			obsP[0] -= 0.2 * cos(aVisao);
 			obsP[2] -= 0.2 * sin(aVisao);
@@ -615,12 +615,12 @@ void teclasNotAscii(int key, int x, int y)
 	}
 	else
 	{
-		if (key == GLUT_KEY_UP)
+		if (key == GLUT_KEY_UP && check_collisions_walls(obsP[0] + stair_piso * 2, obsP[1] + stair_espelho))
 		{
 			obsP[0] += stair_piso * 2;
 			obsP[1] += stair_espelho;
 		}
-		if (key == GLUT_KEY_DOWN)
+		if (key == GLUT_KEY_DOWN && check_collisions_walls(obsP[0] - stair_piso * 2, obsP[1] - stair_espelho))
 		{
 			obsP[0] -= stair_piso * 2;
 			obsP[1] -= stair_espelho;
