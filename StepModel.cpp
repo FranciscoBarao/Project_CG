@@ -25,10 +25,9 @@ GLint wScreen = 800, hScreen = 600;		 //.. janela (pixeis)
 GLfloat xC = 10.0, yC = 10.0, zC = 10.0; //.. Mundo  (unidades mundo)
 
 //------------------------------------------------------------ Observador
-GLfloat aVisao = PI * 1.5; //Porque PI*1.5?  aproximadamente 5
 GLfloat obsP[] = {4, 1, 4};
 GLfloat obsT[] = {0, 1, 0};
-
+GLfloat aVisao = - (atan(obsP[0]/obsP[2])*360)/(2*M_PI)+270; 
 GLfloat width = 8, length = 16, height = 4;
 
 GLfloat angZoom = 90;
@@ -571,12 +570,21 @@ void keyboard(unsigned char key, int x, int y)
 			obsT[0] = 0;
 			obsT[1] = 1;
 			obsT[2] = 0;
+			aVisao =-(atan(obsP[0]/obsP[2])*360)/(2*M_PI) + 270 ;
+
+			printf("angulo = %f",aVisao);
+
 		}
 		else
 		{
 			obsP[0] = stair_piso * 4;
 			obsP[1] = 1;
 			obsP[2] = stair_largura;
+			obsT[0] = 10;
+			obsT[1] = 1;
+			obsT[2] = 0;
+			aVisao = 0;
+			printf("angulo = %f",aVisao);
 		}
 		glutPostRedisplay();
 		break;
@@ -592,26 +600,29 @@ void teclasNotAscii(int key, int x, int y)
 	{
 		if (key == GLUT_KEY_UP && check_collisions_walls(obsP[0] + 0.2 * cos(aVisao), obsP[2] + 0.2 * sin(aVisao)))
 		{
-			obsP[0] += 0.2 * cos(aVisao);
-			obsP[2] += 0.2 * sin(aVisao);
-		
+			obsP[0] += 0.2 * cos((aVisao*2*PI)/360);
+			obsP[2] += 0.2 * sin((aVisao*2*PI)/360);
+
+			printf("angulo = %f\n",aVisao);
 		}
 		if (key == GLUT_KEY_DOWN && check_collisions_walls(obsP[0] - 0.2 * cos(aVisao), obsP[2] - 0.2 * sin(aVisao)))
 		{
-			obsP[0] -= 0.2 * cos(aVisao);
-			obsP[2] -= 0.2 * sin(aVisao);
-			
+			obsP[0] -= 0.2 * cos((aVisao*2*PI)/360);
+			obsP[2] -= 0.2 * sin((aVisao*2*PI)/360);
+			printf("angulo = %f\n",aVisao);
 		}
 		if (key == GLUT_KEY_LEFT)
 		{
-			aVisao -= 0.2;
+			aVisao -= 5;
+			printf("angulo = %f\n",aVisao);
 		}
 		if (key == GLUT_KEY_RIGHT)
 		{
-			aVisao += 0.2;
+			aVisao += 5;
+			printf("angulo = %f\n",aVisao);
 		}
-		obsT[0] = obsP[0] + 2 * cos(aVisao);
-		obsT[2] = obsP[2] + 2 * sin(aVisao);
+		obsT[0] = obsP[0] + 2 * cos((aVisao*2*PI)/360);
+		obsT[2] = obsP[2] + 2 * sin((aVisao*2*PI)/360);
 	}
 	else
 	{
@@ -628,14 +639,14 @@ void teclasNotAscii(int key, int x, int y)
 
 		if (key == GLUT_KEY_LEFT)
 		{
-			aVisao -= 0.2;
+			aVisao -= 5;
 		}
 		if (key == GLUT_KEY_RIGHT)
 		{
-			aVisao += 0.2;
+			aVisao += 5;
 		}
-		obsT[0] = obsP[0] + 2 * cos(aVisao);
-		obsT[2] = obsP[2] + 2 * sin(aVisao);
+		obsT[0] = obsP[0] + 2 * cos((aVisao*2*PI)/360);
+		obsT[2] = obsP[2] + 2 * sin((aVisao*2*PI)/360);
 		obsT[1] = obsP[1];
 	}
 
@@ -673,6 +684,8 @@ int main(int argc, char **argv)
 	CYAN = {0, 1, 1};
 	BLACK = {0, 0, 0};
 	inicializa();
+
+	printf("angulo = %f\n",aVisao);
 
 	glutSpecialFunc(teclasNotAscii);
 	glutDisplayFunc(display);
