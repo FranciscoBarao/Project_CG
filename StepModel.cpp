@@ -25,10 +25,9 @@ GLint wScreen = 800, hScreen = 600;		 //.. janela (pixeis)
 GLfloat xC = 10.0, yC = 10.0, zC = 10.0; //.. Mundo  (unidades mundo)
 
 //Observador
-GLfloat aVisao = PI * 1.5; //Porque PI*1.5?  aproximadamente 5
 GLfloat obsP[] = {4, 1, 4};
-GLfloat obsT[] = {0, 1, 0};
-
+GLfloat obsT[] = {0, 1, -1};
+GLfloat aVisao = - (atan(obsP[0]/obsP[2])*360)/(2*M_PI)+270; 
 //Dados Casa
 GLfloat width = 8, length = 16, height = 4;
 
@@ -41,7 +40,6 @@ GLfloat window_slide = 0;
 GLfloat stair_piso = 0, stair_largura = 0, stair_espelho = 0, stair_n_steps = 0, stair_foward = 0, stair_back = 0;
 
 
-
 GLboolean frenteVisivel = 1;
 GLboolean visivel = 1;
 int in_stairs = -1;
@@ -52,25 +50,22 @@ GLfloat intensidade=0.2;
 GLfloat luzGlobalCorAmb[4]={intensidade,intensidade,intensidade,1.0}; 
 
 //Dados Iluminação Foco
-GLint   ligaFoco=0;
-GLfloat rFoco=1.1, aFoco=aVisao;
-GLfloat incH =0.0, incV=0.0;
-GLfloat incMaxH =0.5, incMaxV=0.35;   
-GLfloat focoPini[]= { obsP[0], obsP[1], obsP[2], 1.0 };
-GLfloat focoPfin[]= { obsP[0]-rFoco*cos(aFoco), obsP[1], obsP[2]-rFoco*sin(aFoco), 1.0};
-GLfloat focoDir[] = { focoPfin[0]-focoPini[0], 0, focoPfin[2]-focoPini[2]};
-GLfloat focoExp   = 10.0;
-GLfloat focoCut   = 60.0;
+GLint   ligaFoco=1;
+GLfloat aFoco=aVisao;
+GLfloat focoDir[] = { obsT[0], 0, obsT[2]};
+GLfloat focoExp   = 20.0;
+GLfloat focoCut   = 80.0;
 
 GLfloat focoCorDif[4] ={ 0.9, 0.9, 0.9, 1.0}; 
 GLfloat focoCorEsp[4] ={ 1.0, 1.0, 1.0, 1.0}; 
 
+GLfloat focoPosition[4] = {obsP[0],obsP[1],obsP[2],1};
 
 //White
 GLfloat whiteAmb  []={ 0.8 ,0.8 ,0.8 };
-GLfloat whiteDif  []={   0.55 ,0.55 ,0.55 };
-GLfloat whiteSpec []={ 0.870 ,0.870 ,0.870 };
-GLint 	whiteCoef     = 0.25 *128;
+GLfloat whiteDif  []={ 0.55 ,0.55 ,0.55};
+GLfloat whiteSpec []={ 0.870 ,0.870 ,0.870};
+GLint 	whiteCoef   = 0.25 *128;
 
 
 GLuint texture[4];
@@ -122,8 +117,8 @@ void initLights(void){
 	//Ambiente
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzGlobalCorAmb);
 	//Foco
-	glLightfv(GL_LIGHT1, GL_POSITION,      focoPini );
-	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION,focoDir );
+	glLightfv(GL_LIGHT1, GL_POSITION,      focoPosition);
+	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION,focoDir);
 	glLightf (GL_LIGHT1, GL_SPOT_EXPONENT ,focoExp);
     glLightf (GL_LIGHT1, GL_SPOT_CUTOFF,   focoCut);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE,       focoCorDif);   
@@ -134,10 +129,6 @@ void initLights(void){
 	glLightfv(GL_LIGHT0, GL_AMBIENT,       lightCeilAmb );   
 	glLightfv(GL_LIGHT0, GL_DIFFUSE,       lightCeilDif );   
 	glLightfv(GL_LIGHT0, GL_SPECULAR,      lightCeilEsp ); */
-	if (ligaFoco)
-	   glEnable(GL_LIGHT1);
-	else
-		glDisable(GL_LIGHT1);
 }
 
 void inicializa(void)
@@ -147,13 +138,13 @@ void inicializa(void)
 	glShadeModel(GL_SMOOTH); //Interpolacao de cores
 
 
-	glEnable(GL_CULL_FACE); //Faces visiveis
-	glCullFace(GL_BACK);	//Mostrar so as da frente
+	//glEnable(GL_CULL_FACE); //Faces visiveis
+	//glCullFace(GL_BACK);	//Mostrar so as da frente
 
 
 	glEnable(GL_LIGHTING);  
-	glDisable(GL_LIGHT0);
-	glEnable(GL_LIGHT1);
+	//glEnable(GL_LIGHT0);
+	glDisable(GL_LIGHT1);
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);    // dos dois lados
 
 	initLights();
@@ -249,7 +240,6 @@ void cube(GLfloat size, Color colors[])
 
 void cubeTest(GLfloat size, Color colors[])
 {
-	glFrontFace(GL_CCW);
 	//Floor
 	glPushMatrix();
 	glEnable(GL_TEXTURE_2D);
@@ -257,14 +247,10 @@ void cubeTest(GLfloat size, Color colors[])
 	initMaterials();
 	glNormal3f(0,1,0);
 	glBegin(GL_POLYGON);
-		glVertex3f(-size, -size, size);
-		glTexCoord2f(0.0f, 0.0f);
-		glVertex3f(size, -size, size);
-		glTexCoord2f(1.0f, 0.0f);
-		glVertex3f(size, -size, -size);
-		glTexCoord2f(1.0f, 1.0f);
-		glVertex3f(-size, -size, -size);
-		glTexCoord2f(0.0f, 1.0f);
+		glTexCoord2f(0.0f, 0.0f);   glVertex3f(-size, -size, -size);
+		glTexCoord2f(1.0f, 0.0f);	glVertex3f(-size, -size, size);
+		glTexCoord2f(1.0f, 1.0f);	glVertex3f( size, -size, size);
+		glTexCoord2f(0.0f, 1.0f);	glVertex3f( size, -size, -size);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
@@ -274,16 +260,12 @@ void cubeTest(GLfloat size, Color colors[])
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, texture[1]);
 		initMaterials();
-		//glNormal3f(0,0,0);
+		glNormal3f(0,0,1);
 		glBegin(GL_POLYGON);
-			glVertex3f(size, size, -size);
-			glTexCoord2f(0.0f, 0.0f);
-			glVertex3f(-size, size, -size);
-			glTexCoord2f(1.0f, 0.0f);
-			glVertex3f(-size, -size, -size);
-			glTexCoord2f(1.0f, 1.0f);
-			glVertex3f(size, -size, -size);
-			glTexCoord2f(0.0f, 1.0f);
+			glTexCoord2f(0.0f, 0.0f);	glVertex3f(size, size, -size);
+			glTexCoord2f(0.0f, 1.0f);	glVertex3f(-size, size, -size);
+			glTexCoord2f(1.0f, 1.0f);	glVertex3f(-size, -size, -size);
+			glTexCoord2f(1.0f, 0.0f);	glVertex3f(size, -size, -size);
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
@@ -292,27 +274,29 @@ void cubeTest(GLfloat size, Color colors[])
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, texture[1]);
 		initMaterials();
-		glNormal3f(1,0,0);
+		glNormal3f(-1,0,0);
 		glBegin(GL_POLYGON);
-		glVertex3f(size, size, size);
-		glTexCoord2f(0.0f, 0.0f);
-		glVertex3f(size, -size, size);
-		glTexCoord2f(1.0f, 0.0f);
-		glVertex3f(size, -size, -size);
-		glTexCoord2f(1.0f, 1.0f);
-		glVertex3f(size, size, -size);
-		glTexCoord2f(0.0f, 1.0f);
+			glTexCoord2f(0.0f, 0.0f);	glVertex3f(size, size, size);
+			glTexCoord2f(0.0f, 1.0f);	glVertex3f(size, size, -size);
+			glTexCoord2f(1.0f, 1.0f);	glVertex3f(size, -size, -size);
+			glTexCoord2f(1.0f, 0.0f);	glVertex3f(size, -size, size);
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
 	//Left
-	glColor3f(colors[5].r, colors[5].g, colors[5].b);
-	glBegin(GL_POLYGON);
-	glVertex3f(-size, size, size);
-	glVertex3f(-size, -size, size);
-	glVertex3f(-size, -size, -size);
-	glVertex3f(-size, size, -size);
-	glEnd();
+	glPushMatrix();
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, texture[1]);
+		initMaterials();
+		glNormal3f(1,0,0);
+		glBegin(GL_POLYGON);
+			glTexCoord2f(0.0f, 0.0f); 	glVertex3f(-size, size, size);
+			glTexCoord2f(0.0f, 1.0f);	glVertex3f(-size, -size, size);
+			glTexCoord2f(1.0f, 1.0f);	glVertex3f(-size, -size, -size);
+			glTexCoord2f(1.0f, 0.0f);	glVertex3f(-size, size, -size);
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
 }
 
 void stair(GLfloat width, GLfloat length, GLfloat height, GLfloat xIni, GLfloat yIni, GLfloat zIni, int nSteps)
@@ -587,12 +571,12 @@ void drawScene()
 		glCullFace(GL_FRONT); //glFrontFace(GL_CCW);
 
 	glPushMatrix();
-	stair(largura, piso, espelho, Stair_Ini_X, Stair_Ini_Y, Stair_Ini_Z, nSteps + 1);
+	//stair(largura, piso, espelho, Stair_Ini_X, Stair_Ini_Y, Stair_Ini_Z, nSteps + 1);
 	walls(width, length, 2 * height, width_window, height_window, depth_wall, window_xPos, window_yPos, room_colors);
-	drawWallDoor(width, length / 2, height, width_door, height_door, depth_wall, door_xPos, wall_colors);
-	drawTable(table_width, table_length, table_thickness, table_xPos, table_yPos, table_zPos, table_legs_thickness, table_colors);
-	drawChair(chair_width, chair_length, chair_thickness, chair_leg_size, 7, 0.4, 14, table_colors);
-	drawCeiling(width, length, height, width_window, height_window, depth_wall, window_xPos, window_yPos, room_colors);
+	//drawWallDoor(width, length / 2, height, width_door, height_door, depth_wall, door_xPos, wall_colors);
+	//drawTable(table_width, table_length, table_thickness, table_xPos, table_yPos, table_zPos, table_legs_thickness, table_colors);
+	//drawChair(chair_width, chair_length, chair_thickness, chair_leg_size, 7, 0.4, 14, table_colors);
+	//drawCeiling(width, length, height, width_window, height_window, depth_wall, window_xPos, window_yPos, room_colors);
 
 	glPopMatrix();
 }
@@ -624,8 +608,7 @@ bool check_collisions_walls(GLfloat x, GLfloat z)
 	//return true;
 }
 
-void keyboard(unsigned char key, int x, int y)
-{
+void keyboard(unsigned char key, int x, int y){
 	switch (key)
 	{
 	case 'f':
@@ -674,12 +657,18 @@ void keyboard(unsigned char key, int x, int y)
 			obsT[0] = 0;
 			obsT[1] = 1;
 			obsT[2] = 0;
+			aVisao =-(atan(obsP[0]/obsP[2])*360)/(2*M_PI) + 270 ;
 		}
 		else
 		{
 			obsP[0] = stair_piso * 4;
 			obsP[1] = 1;
 			obsP[2] = stair_largura;
+			obsT[0] = 10;
+			obsT[1] = 1;
+			obsT[2] = 0;
+			aVisao = 0;
+			printf("angulo = %f",aVisao);
 		}
 		glutPostRedisplay();
 		break;
@@ -689,45 +678,37 @@ void keyboard(unsigned char key, int x, int y)
 	}
 }
 
-void teclasNotAscii(int key, int x, int y)
-{
+void teclasNotAscii(int key, int x, int y){
 	if (in_stairs == -1)
 	{
 		if (key == GLUT_KEY_UP && check_collisions_walls(obsP[0] + 0.2 * cos(aVisao), obsP[2] + 0.2 * sin(aVisao)))
 		{
-			obsP[0] += 0.2 * cos(aVisao);
-			obsP[2] += 0.2 * sin(aVisao);
-		
+			obsP[0] += 0.2 * cos((aVisao*2*PI)/360);
+			obsP[2] += 0.2 * sin((aVisao*2*PI)/360);
 		}
 		if (key == GLUT_KEY_DOWN && check_collisions_walls(obsP[0] - 0.2 * cos(aVisao), obsP[2] - 0.2 * sin(aVisao)))
 		{
-			obsP[0] -= 0.2 * cos(aVisao);
-			obsP[2] -= 0.2 * sin(aVisao);
-			
+			obsP[0] -= 0.2 * cos((aVisao*2*PI)/360);
+			obsP[2] -= 0.2 * sin((aVisao*2*PI)/360);
 		}
 		if (key == GLUT_KEY_LEFT)
 		{
-			aVisao -= 0.2;
-			aFoco  -= 0.2;		
-
+			aVisao -= 5;
 		}
 		if (key == GLUT_KEY_RIGHT)
 		{
-			aVisao += 0.2;
-			aFoco  += 0.2;		
+			aVisao += 5;
 		}
-		obsT[0] = obsP[0] + 2 * cos(aVisao);
-		obsT[2] = obsP[2] + 2 * sin(aVisao);
+		obsT[0] = obsP[0] + 2 * cos((aVisao*2*PI)/360);
+		obsT[2] = obsP[2] + 2 * sin((aVisao*2*PI)/360);
 
-		focoPini[0]=obsP[0];
-		focoPini[2]=obsP[2];
-		focoPfin[0]=focoPini[0]-rFoco*cos(aFoco+incH);
-		focoPfin[2]=focoPini[2]-rFoco*sin(aFoco+incH);
-		focoPini[1]=obsP[1];
-		focoPini[2]=obsP[2];
-		focoDir[0] = focoPfin[0]-focoPini[0];
-		focoDir[1] = incV;
-		focoDir[2] = focoPfin[2]-focoPini[2];
+		aFoco = aVisao;
+		focoDir[0] = obsT[0] - obsP[0];
+		focoDir[2] = obsT[2] - obsP[2];
+		focoPosition[0] = obsP[0];
+		focoPosition[2] = obsP[2];
+		
+		printf("focoDir - [%f %f %f]\n",focoDir[0],focoDir[1],focoDir[2]);
 	}
 	else
 	{
@@ -744,28 +725,16 @@ void teclasNotAscii(int key, int x, int y)
 
 		if (key == GLUT_KEY_LEFT)
 		{
-			aVisao -= 0.2;
+			aVisao -= 5;
 		}
 		if (key == GLUT_KEY_RIGHT)
 		{
-			aVisao += 0.2;
+			aVisao += 5;
 		}
-		obsT[0] = obsP[0] + 2 * cos(aVisao);
-		obsT[2] = obsP[2] + 2 * sin(aVisao);
+		obsT[0] = obsP[0] + 2 * cos((aVisao*2*PI)/360);
+		obsT[2] = obsP[2] + 2 * sin((aVisao*2*PI)/360);
 		obsT[1] = obsP[1];
 	}
-
-	/* Virar o User
-
-		A = X + r*Cos(Alpha+/- 0.1)	
-		B = B
-		C = Y + r*Cos(Alpha+/- 0.1)
-		Frente/Tras do user
-		x = x + passo * cos alpha
-		z = z + passo * sin alpha
-		Atualizar variaveis da circunferencia
-		A = A + passo*cosAlpha
-		C = C + passo*sinAlpha*/
 	glutPostRedisplay();
 }
 
@@ -787,7 +756,6 @@ int main(int argc, char **argv)
 	BLACK = {0, 0, 0};
 
 	inicializa();
-
 
 	glutSpecialFunc(teclasNotAscii);
 	glutDisplayFunc(display);
