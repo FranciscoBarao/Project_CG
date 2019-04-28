@@ -68,6 +68,12 @@ GLfloat whiteSpec []={ 0.870 ,0.870 ,0.870};
 GLint 	whiteCoef   = 0.25 *128;
 
 
+//luz teto propriedades
+GLfloat localPos[4] = {width/2,height,length/2,1};
+GLfloat localCorAmb[4] = {0.0,1.0,1.0,1.0};
+//GLfloat localCorDif[4]= { 0.0, 1.0, 1.0, 1.0}; 
+//GLfloat localCorEsp[4]= { 0.0, 1.0, 1.0, 1.0}; 
+
 GLuint texture[4];
 RgbImage imag;
 
@@ -125,10 +131,11 @@ void initLights(void){
 	glLightfv(GL_LIGHT1, GL_SPECULAR,      focoCorEsp);
 	
 	//Luz Tecto
-	/*glLightfv(GL_LIGHT0, GL_POSITION,      lightCeil );   
-	glLightfv(GL_LIGHT0, GL_AMBIENT,       lightCeilAmb );   
-	glLightfv(GL_LIGHT0, GL_DIFFUSE,       lightCeilDif );   
-	glLightfv(GL_LIGHT0, GL_SPECULAR,      lightCeilEsp ); */
+	glLightfv(GL_LIGHT0, GL_POSITION,      localPos );   
+	glLightfv(GL_LIGHT0, GL_AMBIENT,       localCorAmb );   
+	//glLightfv(GL_LIGHT0, GL_DIFFUSE,       localCorDif );   
+	//glLightfv(GL_LIGHT0, GL_SPECULAR,      localCorEsp ); 
+	glEnable(GL_LIGHT0);
 }
 
 void inicializa(void)
@@ -446,19 +453,19 @@ void drawCeiling(GLfloat width, GLfloat length, GLfloat height, GLfloat width_wi
 {
 	//before stair
 	glPushMatrix();
-	glTranslatef((width / 2 + 2 * stair_piso) / 2, height, stair_largura);
+	glTranslatef((width / 2 + 2 * stair_piso) / 2, height+0.001, stair_largura);
 	glScalef(width / 2 + 2 * stair_piso, 0, stair_largura * 2);
 	cube(0.5, colors);
 	glPopMatrix();
 	//after stair
 	glPushMatrix();
-	glTranslatef(width - (stair_foward * stair_largura - stair_n_steps * stair_piso) / 2, height, stair_largura);
+	glTranslatef(width - (stair_foward * stair_largura - stair_n_steps * stair_piso) / 2, height+0.001, stair_largura);
 	glScalef(((width - stair_foward * stair_piso - stair_n_steps * stair_piso) / 2) / 2, 0, stair_largura * 2);
 	cube(0.5, colors);
 	glPopMatrix();
 	//first floor right ceilling
 	glPushMatrix();
-	glTranslatef(width / 2, height, length / 2 + stair_largura);
+	glTranslatef(width / 2, height+0.001, length / 2 + stair_largura);
 	glScalef(width, 0, length - stair_largura * 2);
 	cube(0.5, colors);
 	glPopMatrix();
@@ -571,12 +578,12 @@ void drawScene()
 		glCullFace(GL_FRONT); //glFrontFace(GL_CCW);
 
 	glPushMatrix();
-	//stair(largura, piso, espelho, Stair_Ini_X, Stair_Ini_Y, Stair_Ini_Z, nSteps + 1);
+	stair(largura, piso, espelho, Stair_Ini_X, Stair_Ini_Y, Stair_Ini_Z, nSteps + 1);
 	walls(width, length, 2 * height, width_window, height_window, depth_wall, window_xPos, window_yPos, room_colors);
-	//drawWallDoor(width, length / 2, height, width_door, height_door, depth_wall, door_xPos, wall_colors);
-	//drawTable(table_width, table_length, table_thickness, table_xPos, table_yPos, table_zPos, table_legs_thickness, table_colors);
-	//drawChair(chair_width, chair_length, chair_thickness, chair_leg_size, 7, 0.4, 14, table_colors);
-	//drawCeiling(width, length, height, width_window, height_window, depth_wall, window_xPos, window_yPos, room_colors);
+	drawWallDoor(width, length / 2, height, width_door, height_door, depth_wall, door_xPos, wall_colors);
+	drawTable(table_width, table_length, table_thickness, table_xPos, table_yPos, table_zPos, table_legs_thickness, table_colors);
+	drawChair(chair_width, chair_length, chair_thickness, chair_leg_size, 7, 0.4, 14, table_colors);
+	drawCeiling(width, length, height, width_window, height_window, depth_wall, window_xPos, window_yPos, room_colors);
 
 	glPopMatrix();
 }
@@ -651,24 +658,49 @@ void keyboard(unsigned char key, int x, int y){
 		in_stairs = in_stairs * -1;
 		if (in_stairs < 0)
 		{
-			obsP[0] = 4;
-			obsP[1] = 1;
-			obsP[2] = 4;
-			obsT[0] = 0;
-			obsT[1] = 1;
-			obsT[2] = 0;
-			aVisao =-(atan(obsP[0]/obsP[2])*360)/(2*M_PI) + 270 ;
+			if(obsP[1] >= height){
+				obsP[0] = stair_piso * 4;
+				obsP[1] = height+1;
+				obsP[2] = stair_largura;
+				obsT[0] = 10;
+				obsT[1] = height+1;
+				obsT[2] = 0;
+				aVisao = 0;
+				printf("angulo = %f",aVisao);
+			}
+			else{
+				obsP[0] = 4;
+				obsP[1] = 1;
+				obsP[2] = 4;
+				obsT[0] = 0;
+				obsT[1] = 1;
+				obsT[2] = 0;
+				aVisao =-(atan(obsP[0]/obsP[2])*360)/(2*M_PI) + 270 ;
+
+				//printf("angulo = %f",aVisao);
+			}
 		}
 		else
 		{
-			obsP[0] = stair_piso * 4;
-			obsP[1] = 1;
-			obsP[2] = stair_largura;
-			obsT[0] = 10;
-			obsT[1] = 1;
-			obsT[2] = 0;
-			aVisao = 0;
-			printf("angulo = %f",aVisao);
+			if(obsP[1]>= height){
+				obsP[0] = stair_n_steps*stair_largura;
+				obsP[1] = height+2;
+				obsP[2] = stair_largura;
+				obsT[0] = 10;
+				obsT[1] = 1;
+				obsT[2] = 0;
+				aVisao = 0;
+			}
+			else{
+				obsP[0] = stair_piso * 4;
+				obsP[1] = 1;
+				obsP[2] = stair_largura;
+				obsT[0] = 10;
+				obsT[1] = 1;
+				obsT[2] = 0;
+				aVisao = 0;
+				//printf("angulo = %f",aVisao);
+			}
 		}
 		glutPostRedisplay();
 		break;
