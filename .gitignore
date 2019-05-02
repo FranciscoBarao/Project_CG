@@ -30,3 +30,8 @@
 *.exe
 *.out
 *.app
+main
+.vscode/ipch/60f8545493d2c308/mmap_address.bin
+main
+main
+.vscode/ipch/60f8545493d2c308/StepModel.ipch

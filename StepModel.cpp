@@ -34,19 +34,19 @@ GLfloat stair_piso = 0, stair_largura = 0, stair_espelho = 0, stair_n_steps = 0,
 int in_stairs = -1;
 
 //Dados Iluminação Ambiente
-GLint   dia=0;
-GLfloat intensidade=0.4;
-GLfloat luzGlobalCorAmb[4]={intensidade,intensidade,intensidade,1.0}; 
+GLint   dia=1;
+GLfloat intensidadeNoite[4]={0.1,0.1,0.1,1.0};
+GLfloat luzGlobalCorAmb[4]={1.0,1.0,0.8,1.0}; 
 
 
 //Dados Iluminação Foco
 GLint   ligaFoco=1;
 GLfloat aFoco=aVisao;
 GLfloat focoDir[] = { obsT[0], 0, obsT[2]};
-GLfloat focoExp   = 40.0;
-GLfloat focoCut   = 80.0;
+GLfloat focoExp   = 10.0;
+GLfloat focoCut   = 30.0;
 
-GLfloat focoCorDif[4] ={ 0.9, 0.9, 0.9, 1.0}; 
+GLfloat focoCorDif[4] ={ 1.0, 1.0, 1.0, 1.0}; 
 GLfloat focoCorEsp[4] ={ 1.0, 1.0, 1.0, 1.0}; 
 
 GLfloat focoPosition[4] = {obsP[0],obsP[1],obsP[2],1};
@@ -59,10 +59,10 @@ GLint 	whiteCoef   = 0.25 *128;
 
 
 //luz teto propriedades
-GLfloat localPos[4] = {width/2,height,length/2,1};
-GLfloat localCorAmb[4] = {0.0,1.0,1.0,1.0};
-//GLfloat localCorDif[4]= { 0.0, 1.0, 1.0, 1.0}; 
-//GLfloat localCorEsp[4]= { 0.0, 1.0, 1.0, 1.0}; 
+int light_teto_on = 1;
+GLfloat localPos[4] = {width,height*2,length,1};
+GLfloat localCorAmb[4] = {0.7,0.7,0.7,1.0};
+GLfloat localCorDif[4]= { 0.7, 0.7, 0.7, 1.0};
 
 GLuint texture[10];
 RgbImage imag;
@@ -200,8 +200,12 @@ void initLights(void){
 	//Luz Tecto
 	glLightfv(GL_LIGHT0, GL_POSITION,      localPos );   
 	glLightfv(GL_LIGHT0, GL_AMBIENT,       localCorAmb );   
-	//glLightfv(GL_LIGHT0, GL_DIFFUSE,       localCorDif );   
-	//glLightfv(GL_LIGHT0, GL_SPECULAR,      localCorEsp ); 
+	glLightfv(GL_LIGHT0, GL_DIFFUSE,       localCorDif );
+	//glLightf(GL_LIGHT0,GL_CONSTANT_ATTENUATION,1);   
+	//glLightf(GL_LIGHT0,GL_LINEAR_ATTENUATION,1);
+	//glLightf(GL_LIGHT0,GL_QUADRATIC_ATTENUATION,2);
+
+
 	glEnable(GL_LIGHT0);
 }
 
@@ -213,10 +217,11 @@ void inicializa(void){
 	glEnable(GL_LIGHTING);  
 	//glEnable(GL_LIGHT0);
 	glDisable(GL_LIGHT1);
-	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);    // dos dois lados
+//	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);    // dos dois lados
 
 	initLights();
 	initTexturas();
+
 }
 
 void cube(GLfloat size, int n_texture){
@@ -418,7 +423,7 @@ void stair(GLfloat width, GLfloat length, GLfloat height, GLfloat xIni, GLfloat 
 			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, texture[5]);
 			initMaterials();
-			glNormal3f(0,1,0);
+			glNormal3f(0,0,1);
 			glBegin(GL_POLYGON);
 				glTexCoord2f(0.0f, 0.0f);	glVertex3f(Mov_XD + xIni, Mov_YD + yIni, Mov_Z + zIni + 2 * largura);
 				glTexCoord2f(0.0f, 1.0f);	glVertex3f(Mov_XD + xIni + 2 * piso, Mov_YD + yIni, Mov_Z + zIni + 2 * largura);
@@ -598,7 +603,7 @@ void drawChair(GLfloat width, GLfloat length, GLfloat thickness, GLfloat leg_siz
 	glPushMatrix();
 		glTranslatef(xPos + width / 2 - leg_size / 2, yPos / 2, zPos - length / 2 + leg_size / 2);
 		glScalef(leg_size, yPos, leg_size);
-		cube(0.5, 5);
+		cube(0.5, 5 );
 	glPopMatrix();
 
 	glPushMatrix();
@@ -723,7 +728,7 @@ void keyboard(unsigned char key, int x, int y){
 				obsT[1] = height+1;
 				obsT[2] = 0;
 				aVisao = 0;
-				printf("angulo = %f",aVisao);
+				//printf("angulo = %f",aVisao);
 			}
 			else{
 				obsP[0] = 4;
@@ -743,10 +748,10 @@ void keyboard(unsigned char key, int x, int y){
 				obsP[0] = stair_n_steps*stair_largura;
 				obsP[1] = height+2;
 				obsP[2] = stair_largura;
-				obsT[0] = 10;
-				obsT[1] = 1;
+				obsT[0] = -10;
+				obsT[1] = height+2;
 				obsT[2] = 0;
-				aVisao = 0;
+				aVisao = 180;
 			}
 			else{
 				obsP[0] = stair_piso * 4;
@@ -760,6 +765,32 @@ void keyboard(unsigned char key, int x, int y){
 			}
 		}
 		glutPostRedisplay();
+		break;
+	case 'T':
+	case 't':
+		if(light_teto_on){
+			glDisable(GL_LIGHT0);
+			light_teto_on = 0;
+		}
+		else
+		{
+			light_teto_on = 1;
+			glEnable(GL_LIGHT0);
+		}
+		glutPostRedisplay();
+		break;
+	case 'N':
+	case 'n':
+		if(dia){
+			dia = 0;
+			glLightModelfv(GL_LIGHT_MODEL_AMBIENT, intensidadeNoite);
+			glutPostRedisplay();
+		}
+		else{
+			dia = 1;
+			glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzGlobalCorAmb);
+			glutPostRedisplay();
+		}
 		break;
 	case 27:
 		exit(0);
