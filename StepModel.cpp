@@ -44,12 +44,12 @@ GLint   ligaFoco=1;
 GLfloat aFoco=aVisao;
 GLfloat focoDir[] = { obsT[0], 0, obsT[2]};
 GLfloat focoExp   = 10.0;
-GLfloat focoCut   = 30.0;
+GLfloat focoCut   = 40.0;
 
 GLfloat focoCorDif[4] ={ 1.0, 1.0, 1.0, 1.0}; 
 GLfloat focoCorEsp[4] ={ 1.0, 1.0, 1.0, 1.0}; 
 
-GLfloat focoPosition[4] = {obsP[0],obsP[1],obsP[2],1};
+GLfloat focoPosition[4] = {0,0,0,1};
 
 //White
 GLfloat whiteAmb  []={ 0.8 ,0.8 ,0.8 };
@@ -425,10 +425,10 @@ void stair(GLfloat width, GLfloat length, GLfloat height, GLfloat xIni, GLfloat 
 			initMaterials();
 			glNormal3f(0,0,1);
 			glBegin(GL_POLYGON);
-				glTexCoord2f(0.0f, 0.0f);	glVertex3f(Mov_XD + xIni, Mov_YD + yIni, Mov_Z + zIni + 2 * largura);
-				glTexCoord2f(0.0f, 1.0f);	glVertex3f(Mov_XD + xIni + 2 * piso, Mov_YD + yIni, Mov_Z + zIni + 2 * largura);
-				glTexCoord2f(1.0f, 1.0f);	glVertex3f(Mov_XD + xIni + 2 * piso, 0, Mov_Z + zIni + 2 * largura);
-				glTexCoord2f(1.0f, 0.0f);	glVertex3f(Mov_XD + xIni, 0, Mov_Z + zIni + 2 * largura);
+				glTexCoord2f(0.0f, 0.0f);	glVertex3f(Mov_XD + xIni, Mov_YD + yIni, Mov_Z + zIni + 2 * largura+0.001);
+				glTexCoord2f(0.0f, 1.0f);	glVertex3f(Mov_XD + xIni + 2 * piso, Mov_YD + yIni, Mov_Z + zIni + 2 * largura+0.001);
+				glTexCoord2f(1.0f, 1.0f);	glVertex3f(Mov_XD + xIni + 2 * piso, 0, Mov_Z + zIni + 2 * largura+0.001);
+				glTexCoord2f(1.0f, 0.0f);	glVertex3f(Mov_XD + xIni, 0, Mov_Z + zIni + 2 * largura+0.001);
 			glEnd();
 			glDisable(GL_TEXTURE_2D);
 		glPopMatrix();
