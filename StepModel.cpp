@@ -135,7 +135,7 @@ void initTexturas(){
 	//----------------------------------------- chair
 	glGenTextures(1, &texture[4]);
 	glBindTexture(GL_TEXTURE_2D, texture[4]);
-	imag.LoadBmpFile("Images/wall.bmp");
+	imag.LoadBmpFile("Images/chair.bmp");
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -541,17 +541,36 @@ void drawCeiling(GLfloat width, GLfloat length, GLfloat height, GLfloat width_wi
 	glPushMatrix();
 	glTranslatef((width / 2 + 2 * stair_piso) / 2, height+0.001, stair_largura);
 	glScalef(width / 2 + 2 * stair_piso, 0, stair_largura * 2);
-	cube(0.5, 2);
+	cube(0.5, 0);
 	glPopMatrix();
 	//after stair
 	glPushMatrix();
 	glTranslatef(width - (stair_foward * stair_largura - stair_n_steps * stair_piso) / 2, height+0.001, stair_largura);
 	glScalef(((width - stair_foward * stair_piso - stair_n_steps * stair_piso) / 2) / 2, 0, stair_largura * 2);
-	cube(0.5, 2);
+	cube(0.5, 0);
 	glPopMatrix();
 	//first floor right ceilling
 	glPushMatrix();
 	glTranslatef(width / 2, height+0.001, length / 2 + stair_largura);
+	glScalef(width, 0, length - stair_largura * 2);
+	cube(0.5, 0);
+	glPopMatrix();
+
+	//before stair
+	glPushMatrix();
+	glTranslatef((width / 2 + 2 * stair_piso) / 2, height, stair_largura);
+	glScalef(width / 2 + 2 * stair_piso, 0, stair_largura * 2);
+	cube(0.5, 2);
+	glPopMatrix();
+	//after stair
+	glPushMatrix();
+	glTranslatef(width - (stair_foward * stair_largura - stair_n_steps * stair_piso) / 2, height, stair_largura);
+	glScalef(((width - stair_foward * stair_piso - stair_n_steps * stair_piso) / 2) / 2, 0, stair_largura * 2);
+	cube(0.5, 2);
+	glPopMatrix();
+	//first floor right ceilling
+	glPushMatrix();
+	glTranslatef(width / 2, height, length / 2 + stair_largura);
 	glScalef(width, 0, length - stair_largura * 2);
 	cube(0.5, 2);
 	glPopMatrix();
@@ -618,7 +637,7 @@ void drawChair(GLfloat width, GLfloat length, GLfloat thickness, GLfloat leg_siz
 		cube(0.5, 5);
 	glPopMatrix();
 
-	glPushMatrix();
+	glPushMatrix(); 
 		glTranslatef(xPos + width / 2 - leg_size / 2, yPos / 2, zPos + length / 2 - leg_size / 2);
 		glScalef(leg_size, yPos, leg_size);
 		cube(0.5, 5);
