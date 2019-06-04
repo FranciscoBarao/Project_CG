@@ -6,11 +6,38 @@ g++ a.cpp -lGL -lGLU -lglut -lm -o main*/
 #include <GL/glut.h>
 #include "RgbImage.h"
 
+#define frand()			((float)rand()/RAND_MAX)
+
 #define M_PI 3.14159265358979323846
 //--------------------------------- Definir cores
 #define BLACK2 0.0, 0.0, 0.0, 1.0
 
 #define PI 3.14159
+
+#define MAX_PARTICLES 1000
+GLfloat slowdown = 1.0;
+GLfloat velocity = 10.0;
+GLfloat zoom = -10.0;
+int loop;
+int rain;
+
+typedef struct {
+  // Life
+  bool alive;	// is the particle alive?
+  float life;	// particle lifespan
+  float fade; // decay
+  // Position/direction
+  float xpos;
+  float ypos;
+  float zpos;
+  // Velocity/Direction, only goes down in y dir
+  float vel;
+  // Gravity
+  float gravity;
+}particles;
+
+particles par_sys[MAX_PARTICLES];
+
 
 //Sistema Coordenadas + objectos
 GLint wScreen = 800, hScreen = 600;		 //.. janela (pixeis)
@@ -67,6 +94,22 @@ GLfloat localCorDif[4]= { 0.7, 0.7, 0.7, 1.0};
 GLuint texture[10];
 RgbImage imag;
 
+
+void initParticles(int i) {
+    par_sys[i].alive = true;
+    par_sys[i].life = 1.0;
+    par_sys[i].fade = float(rand()%100)/1000.0f+0.003f;
+
+    //par_sys[i].xpos = (float) (rand() % 10) + 6;
+	par_sys[i].xpos	= 6.4 + 0.25*frand()*5;   
+    par_sys[i].ypos = 2*height+0.3;
+	par_sys[i].zpos	= 16.3 + 0.25*frand()*5; 
+    //par_sys[i].zpos = (float) (rand() % 10) + 16;
+
+    par_sys[i].vel = velocity;
+    par_sys[i].gravity = -9.8;
+
+}
 
 void initTexturas(){
 	//----------------------------------------- Floor
@@ -222,6 +265,9 @@ void inicializa(void){
 	initLights();
 	initTexturas();
 
+	for (loop = 0; loop < MAX_PARTICLES; loop++) {
+        initParticles(loop);
+    }
 }
 
 void cube(GLfloat size, int n_texture){
@@ -238,6 +284,87 @@ void cube(GLfloat size, int n_texture){
 		glEnd();
 	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
+	
+	//Floor
+	glPushMatrix();
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture[n_texture]);
+	initMaterials();
+	glNormal3f(0,1,0);
+	glBegin(GL_POLYGON);
+		glTexCoord2f(0.0f, 0.0f);   glVertex3f(-size, -size, -size);
+		glTexCoord2f(1.0f, 0.0f);	glVertex3f(-size, -size, size);
+		glTexCoord2f(1.0f, 1.0f);	glVertex3f( size, -size, size);
+		glTexCoord2f(0.0f, 1.0f);	glVertex3f( size, -size, -size);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+
+	//Front
+	glPushMatrix();
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, texture[n_texture]);
+		initMaterials();
+		glNormal3f(0,0,1);
+		glBegin(GL_POLYGON);
+			glTexCoord2f(0.0f, 0.0f);	glVertex3f(size, size, size);
+			glTexCoord2f(0.0f, 1.0f);	glVertex3f(-size, size, size);
+			glTexCoord2f(1.0f, 1.0f);	glVertex3f(-size, -size, size);
+			glTexCoord2f(1.0f, 0.0f);	glVertex3f(size, -size, size);
+		glEnd();
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+
+
+	//Back
+	glPushMatrix();
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, texture[n_texture]);
+		initMaterials();
+		glNormal3f(0,0,-1);
+		glBegin(GL_POLYGON);
+			glTexCoord2f(0.0f, 0.0f);	glVertex3f(size, size, -size);
+			glTexCoord2f(1.0f, 0.0f);	glVertex3f(size, -size, -size);
+			glTexCoord2f(1.0f, 1.0f);	glVertex3f(-size, -size, -size);
+			glTexCoord2f(0.0f, 1.0f);	glVertex3f(-size, size, -size);
+
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+	//Right
+	glPushMatrix();
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, texture[n_texture]);
+		initMaterials();
+		glNormal3f(-1,0,0);
+		glBegin(GL_POLYGON);
+			glTexCoord2f(0.0f, 0.0f);	glVertex3f(size, size, size);
+			glTexCoord2f(1.0f, 0.0f);	glVertex3f(size, -size, size);
+			glTexCoord2f(1.0f, 1.0f);	glVertex3f(size, -size, -size);
+			glTexCoord2f(0.0f, 1.0f);	glVertex3f(size, size, -size);
+
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+	//Left
+	glPushMatrix();
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, texture[n_texture]);
+		initMaterials();
+		glNormal3f(-1,0,0);
+		glBegin(GL_POLYGON);
+			glTexCoord2f(0.0f, 0.0f); 	glVertex3f(-size, size, size);
+			glTexCoord2f(1.0f, 0.0f);	glVertex3f(-size, size, -size);
+			glTexCoord2f(1.0f, 1.0f);	glVertex3f(-size, -size, -size);
+			glTexCoord2f(0.0f, 1.0f);	glVertex3f(-size, -size, size);
+
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+}
+
+
+void Tub(GLfloat size, int n_texture){
 	
 	//Floor
 	glPushMatrix();
@@ -653,6 +780,48 @@ void walls(GLfloat width, GLfloat length, GLfloat height, GLfloat width_window, 
 	drawWallWindow(width, length, height, width_window, height_window, depth_wall, window_xPos, window_yPos);
 }
 
+void drawRain() {
+  float x, y, z;
+
+  if(rain){
+	for (loop = 0; loop < MAX_PARTICLES; loop=loop+2) {
+		if (par_sys[loop].alive == true) {
+		x = par_sys[loop].xpos;
+		y = par_sys[loop].ypos;
+		z = par_sys[loop].zpos + zoom;
+
+		// Draw particles
+		glPushMatrix();
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, texture[1]);
+			initMaterials();
+			glNormal3f(0,1,0);
+			glBegin(GL_LINES);
+				glTexCoord2f(0.0f, 0.0f);	glVertex3f(x, y, z);
+				glTexCoord2f(1.0f, 0.0f);   glVertex3f(x, y+0.5, z);
+			glEnd();
+			glDisable(GL_TEXTURE_2D);
+		glPopMatrix();
+
+		// Update values ||Move || Adjust slowdown for speed!
+		par_sys[loop].ypos += par_sys[loop].vel / (slowdown*1000);
+		par_sys[loop].vel += par_sys[loop].gravity;
+		// Decay
+		par_sys[loop].life -= par_sys[loop].fade;
+
+		if (par_sys[loop].ypos <= height-0.2) {
+			par_sys[loop].life = -1.0;
+		}
+		//Revive
+		if (par_sys[loop].life < 0.0) {
+			initParticles(loop);
+		}
+	  }
+	}
+  }
+}
+
+
 void drawScene(){
 	GLfloat depth_wall = 0.1, width_door = 1.5, height_door = 2, door_xPos = 2;
 	GLfloat width_window = 1, height_window = 1.5, window_yPos = 2, window_xPos = 5;
@@ -672,12 +841,19 @@ void drawScene(){
 	nSteps = nSteps - (foward / 2);
 	stair_espelho = espelho, stair_largura = largura, stair_n_steps = nSteps, stair_piso = piso;
 	
+	
 	stair(largura, piso, espelho, Stair_Ini_X, Stair_Ini_Y, Stair_Ini_Z, nSteps + 1);
 	walls(width, length, 2 * height, width_window, height_window, depth_wall, window_xPos, window_yPos);
 	drawWallDoor(width, length / 2, height, width_door, height_door, depth_wall, door_xPos);
 	drawTable(table_width, table_length, table_thickness, table_xPos, table_yPos, table_zPos, table_legs_thickness);
 	drawChair(chair_width, chair_length, chair_thickness, chair_leg_size, 7, 0.4, 14);
 	drawCeiling(width, length, height, width_window, height_window, depth_wall, window_xPos, window_yPos);
+	
+	glPushMatrix();
+		glTranslatef(7 , 4.3 , 7);
+		glScalef(1.5, 0.5, 1.5);
+		Tub(0.5,1);
+	glPopMatrix();
 
 	glPopMatrix();
 }
@@ -700,10 +876,10 @@ void display(void){
 }
 bool check_collisions_walls(GLfloat x, GLfloat z){
 	//0.2  +/- valor maximo que pode vir a somar.. aproxima do valor real para nao deixar ver dentro das paredes
-	return ((x >= 0.2) && (x <= width-0.2) 
-		&&  (z >= 0.2) && (z <= length-0.2));
+	//return ((x >= 0.2) && (x <= width-0.2) 
+	//	&&  (z >= 0.2) && (z <= length-0.2));
 
-	//return true;
+	return true;
 }
 
 void keyboard(unsigned char key, int x, int y){
@@ -811,6 +987,13 @@ void keyboard(unsigned char key, int x, int y){
 			glutPostRedisplay();
 		}
 		break;
+	case 'R':
+	case 'r':
+		if(rain) rain=0;
+		else rain=1;
+		glutPostRedisplay();
+		break;
+
 	case 27:
 		exit(0);
 		break;
@@ -875,8 +1058,15 @@ void teclasNotAscii(int key, int x, int y){
 	glutPostRedisplay();
 }
 
-int main(int argc, char **argv)
-{
+void idle(void){
+
+ glutPostRedisplay();
+
+}
+
+
+
+int main(int argc, char **argv){
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(wScreen, hScreen);
@@ -888,6 +1078,7 @@ int main(int argc, char **argv)
 	glutSpecialFunc(teclasNotAscii);
 	glutDisplayFunc(display);
 	glutKeyboardFunc(keyboard);
+	glutIdleFunc(idle);
 
 	glutMainLoop();
 
