@@ -363,6 +363,48 @@ void cube(GLfloat size, int n_texture){
 	glPopMatrix();
 }
 
+void desenha_espelho(){
+	glPushMatrix();
+	glBegin(GL_POLYGON);
+			glVertex3f(length-1, height, width);
+			glVertex3f(length-1, height, width+1.5);
+			glVertex3f(length-1, height+2, width+1.5);
+			glVertex3f(length-1, height+2, width);
+		glEnd();
+	glPopMatrix();
+}
+
+void espelhoD(){
+	glColorMask(0,0,0,0);
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_STENCIL_TEST);
+	glClear(GL_STENCIL_BUFFER_BIT);
+	glStencilMask(0xFF);
+
+	glStencilFunc(GL_ALWAYS,1,1);
+	glStencilOp(GL_REPLACE,GL_REPLACE,GL_REPLACE);
+	desenha_espelho();
+
+	glColorMask(1,1,1,1);
+	glEnable(GL_DEPTH_TEST);
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	glStencilFunc(GL_EQUAL,1,1);
+	glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
+
+	glPushMatrix();
+
+		glScalef(1,1,-1);
+		glTranslatef(width-2,height+.3,length/2+2);
+		glutSolidCube(1);
+	glPopMatrix();
+	
+	glDisable(GL_STENCIL_TEST);
+	glPushMatrix();
+		glTranslatef(width-2,height+.3,length/2+2);
+		glutSolidCube(1);
+	glPopMatrix();
+}
 
 void Tub(GLfloat size, int n_texture){
 	
@@ -848,6 +890,7 @@ void drawScene(){
 	drawTable(table_width, table_length, table_thickness, table_xPos, table_yPos, table_zPos, table_legs_thickness);
 	drawChair(chair_width, chair_length, chair_thickness, chair_leg_size, 7, 0.4, 14);
 	drawCeiling(width, length, height, width_window, height_window, depth_wall, window_xPos, window_yPos);
+	espelhoD();
 	
 	glPushMatrix();
 		glTranslatef(7 , 4.3 , 7);
