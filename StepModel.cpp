@@ -220,6 +220,20 @@ void initTexturas(){
 				 imag.GetNumCols(),
 				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
 				 imag.ImageData());
+
+	glGenTextures(1, &texture[7]);
+	glBindTexture(GL_TEXTURE_2D, texture[7]);
+	imag.LoadBmpFile("Images/a.bmp");
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, 3,
+				 imag.GetNumCols(),
+				 imag.GetNumRows(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+				 imag.ImageData());
 }
 
 void initMaterials(){
@@ -577,7 +591,7 @@ void cubeTest(GLfloat size){
 	//Back
 	glPushMatrix();
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, texture[1]);
+		glBindTexture(GL_TEXTURE_2D, texture[7]);
 		initMaterials();
 		glNormal3f(0,0,1);
 		glBegin(GL_POLYGON);
@@ -591,7 +605,7 @@ void cubeTest(GLfloat size){
 	//Right
 	glPushMatrix();
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, texture[1]);
+		glBindTexture(GL_TEXTURE_2D, texture[7]);
 		initMaterials();
 		glNormal3f(-1,0,0);
 		glBegin(GL_POLYGON);
@@ -605,7 +619,7 @@ void cubeTest(GLfloat size){
 	//Left
 	glPushMatrix();
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, texture[1]);
+		glBindTexture(GL_TEXTURE_2D, texture[7]);
 		initMaterials();
 		glNormal3f(1,0,0);
 		glBegin(GL_POLYGON);
@@ -715,19 +729,19 @@ void drawWallDoor(GLfloat width, GLfloat length, GLfloat height, GLfloat width_d
 	glPushMatrix(); //Left wall
 	glTranslatef(door_xPos + width_door / 2 + (width - (door_xPos + width_door / 2)) / 2, height / 2, length);
 	glScalef(width - (door_xPos + width_door / 2), height, depth_wall);
-	cube(0.5, 1);
+	cube(0.5, 7);
 	glPopMatrix();
 
 	glPushMatrix(); //Right wall
 	glTranslatef((door_xPos - width_door / 2) / 2, height / 2, length);
 	glScalef(door_xPos - width_door / 2, height, depth_wall);
-	cube(0.5, 1);
+	cube(0.5, 7);
 	glPopMatrix();
 
 	glPushMatrix(); //Middle wall
 	glTranslatef(door_xPos, height_door + (height - height_door) / 2, length);
 	glScalef(width_door, height - height_door, depth_wall);
-	cube(0.5, 1);
+	cube(0.5, 7);
 	glPopMatrix();
 
 	glPushMatrix(); //Door
@@ -739,35 +753,36 @@ void drawWallDoor(GLfloat width, GLfloat length, GLfloat height, GLfloat width_d
 	cube(0.5, 5);
 	glPopMatrix();
 }
+
 void drawWallWindow(GLfloat width, GLfloat length, GLfloat height, GLfloat width_window, GLfloat height_window, GLfloat depth_wall, GLfloat window_xPos, GLfloat window_yPos){
 	glPushMatrix(); //Left wall
 	glTranslatef(window_xPos + width_window / 2 + (width - (window_xPos + width_window / 2)) / 2, height / 2, length);
 	glScalef(width - (window_xPos + width_window / 2), height, depth_wall);
-	cube(0.5, 4);
+	cube(0.5, 7);
 	glPopMatrix();
 
 	glPushMatrix(); //Right wall
 	glTranslatef((window_xPos - width_window / 2) / 2, height / 2, length);
 	glScalef(window_xPos - width_window / 2, height, depth_wall);
-	cube(0.5, 4);
+	cube(0.5, 7);
 	glPopMatrix();
 
 	glPushMatrix(); //Middle wall Up
 	glTranslatef(window_xPos, window_yPos + height_window / 2 + (height - (window_yPos + height_window / 2)) / 2, length);
 	glScalef(width_window, height - (window_yPos + height_window / 2), depth_wall);
-	cube(0.5, 4);
+	cube(0.5, 7);
 	glPopMatrix();
 
 	glPushMatrix(); //Middle wall Down
 	glTranslatef(window_xPos, (window_yPos - height_window / 2) / 2, length);
 	glScalef(width_window, window_yPos - height_window / 2, depth_wall);
-	cube(0.5, 4);
+	cube(0.5, 7);
 	glPopMatrix();
 
 	glPushMatrix(); //Window
 	glTranslatef(window_xPos, window_yPos + window_slide, length + depth_wall / 2);
 	glScalef(width_window, height_window - window_slide, depth_wall / 2);
-	cube(0.5, 4);
+	cube(0.5, 5);
 	glPopMatrix();
 
 	glPushMatrix(); //Window
@@ -990,10 +1005,10 @@ void display(void){
 }
 bool check_collisions_walls(GLfloat x, GLfloat z){
 	//0.2  +/- valor maximo que pode vir a somar.. aproxima do valor real para nao deixar ver dentro das paredes
-	//return ((x >= 0.2) && (x <= width-0.2) 
-	//	&&  (z >= 0.2) && (z <= length-0.2));
+	return ((x >= 0.3) && (x <= width-0.2) 
+		&&  (z >= 0.3) && (z <= length-0.2));
 
-	return true;
+	//return true;
 }
 
 void keyboard(unsigned char key, int x, int y){
