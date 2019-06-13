@@ -848,13 +848,13 @@ void drawScene(){
 	drawTable(table_width, table_length, table_thickness, table_xPos, table_yPos, table_zPos, table_legs_thickness);
 	drawChair(chair_width, chair_length, chair_thickness, chair_leg_size, 7, 0.4, 14);
 	drawCeiling(width, length, height, width_window, height_window, depth_wall, window_xPos, window_yPos);
-	
+	drawRain();
+
 	glPushMatrix();
 		glTranslatef(7 , 4.3 , 7);
 		glScalef(1.5, 0.5, 1.5);
 		Tub(0.5,1);
 	glPopMatrix();
-
 	glPopMatrix();
 }
 void display(void){
