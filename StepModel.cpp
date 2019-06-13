@@ -260,7 +260,7 @@ void inicializa(void){
 	glEnable(GL_LIGHTING);  
 	//glEnable(GL_LIGHT0);
 	glDisable(GL_LIGHT1);
-//	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);    // dos dois lados
+  //glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);    // dos dois lados
 
 	initLights();
 	initTexturas();
@@ -273,35 +273,58 @@ void inicializa(void){
 void cube(GLfloat size, int n_texture){
 	//Ceiling
 	glPushMatrix();
+		if(n_texture>-1){
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, texture[n_texture]);
 		initMaterials();
-		glBegin(GL_POLYGON);
-			glTexCoord2f(0.0f, 0.0f); 	glVertex3f(-size, size, -size);
-			glTexCoord2f(1.0f, 0.0f);	glVertex3f(-size, size, size);
-			glTexCoord2f(1.0f, 1.0f);	glVertex3f(size, size, size);
-			glTexCoord2f(0.0f, 1.0f);	glVertex3f(size, size, -size);
-		glEnd();
-	glDisable(GL_TEXTURE_2D);
+		
+			glBegin(GL_POLYGON);
+				glTexCoord2f(0.0f, 0.0f); 	glVertex3f(-size, size, -size);
+				glTexCoord2f(1.0f, 0.0f);	glVertex3f(-size, size, size);
+				glTexCoord2f(1.0f, 1.0f);	glVertex3f(size, size, size);
+				glTexCoord2f(0.0f, 1.0f);	glVertex3f(size, size, -size);
+			glEnd();
+		glDisable(GL_TEXTURE_2D);
+		}
+		else{
+			glBegin(GL_POLYGON);
+				glTexCoord2f(0.0f, 0.0f); 	glVertex3f(-size, size, -size);
+				glTexCoord2f(1.0f, 0.0f);	glVertex3f(-size, size, size);
+				glTexCoord2f(1.0f, 1.0f);	glVertex3f(size, size, size);
+				glTexCoord2f(0.0f, 1.0f);	glVertex3f(size, size, -size);
+			glEnd();
+		}
 	glPopMatrix();
 	
 	//Floor
 	glPushMatrix();
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texture[n_texture]);
-	initMaterials();
-	glNormal3f(0,1,0);
-	glBegin(GL_POLYGON);
-		glTexCoord2f(0.0f, 0.0f);   glVertex3f(-size, -size, -size);
-		glTexCoord2f(1.0f, 0.0f);	glVertex3f(-size, -size, size);
-		glTexCoord2f(1.0f, 1.0f);	glVertex3f( size, -size, size);
-		glTexCoord2f(0.0f, 1.0f);	glVertex3f( size, -size, -size);
-	glEnd();
-	glDisable(GL_TEXTURE_2D);
+	if(n_texture>-1){
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, texture[n_texture]);
+		initMaterials();
+		glNormal3f(0,1,0);
+		glBegin(GL_POLYGON);
+			glTexCoord2f(0.0f, 0.0f);   glVertex3f(-size, -size, -size);
+			glTexCoord2f(1.0f, 0.0f);	glVertex3f(-size, -size, size);
+			glTexCoord2f(1.0f, 1.0f);	glVertex3f( size, -size, size);
+			glTexCoord2f(0.0f, 1.0f);	glVertex3f( size, -size, -size);
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+	}
+	else{
+		glNormal3f(0,1,0);
+		glBegin(GL_POLYGON);
+			glTexCoord2f(0.0f, 0.0f);   glVertex3f(-size, -size, -size);
+			glTexCoord2f(1.0f, 0.0f);	glVertex3f(-size, -size, size);
+			glTexCoord2f(1.0f, 1.0f);	glVertex3f( size, -size, size);
+			glTexCoord2f(0.0f, 1.0f);	glVertex3f( size, -size, -size);
+		glEnd();
+	}
 	glPopMatrix();
 
 	//Front
 	glPushMatrix();
+	if(n_texture>-1){
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, texture[n_texture]);
 		initMaterials();
@@ -313,11 +336,22 @@ void cube(GLfloat size, int n_texture){
 			glTexCoord2f(1.0f, 0.0f);	glVertex3f(size, -size, size);
 		glEnd();
 	glDisable(GL_TEXTURE_2D);
+	}
+	else{
+		glNormal3f(0,0,1);
+		glBegin(GL_POLYGON);
+			glTexCoord2f(0.0f, 0.0f);	glVertex3f(size, size, size);
+			glTexCoord2f(0.0f, 1.0f);	glVertex3f(-size, size, size);
+			glTexCoord2f(1.0f, 1.0f);	glVertex3f(-size, -size, size);
+			glTexCoord2f(1.0f, 0.0f);	glVertex3f(size, -size, size);
+		glEnd();
+	}
 	glPopMatrix();
 
 
 	//Back
 	glPushMatrix();
+	if(n_texture>-1){
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, texture[n_texture]);
 		initMaterials();
@@ -330,9 +364,21 @@ void cube(GLfloat size, int n_texture){
 
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
+	}
+	else{
+		glNormal3f(0,0,-1);
+		glBegin(GL_POLYGON);
+			glTexCoord2f(0.0f, 0.0f);	glVertex3f(size, size, -size);
+			glTexCoord2f(1.0f, 0.0f);	glVertex3f(size, -size, -size);
+			glTexCoord2f(1.0f, 1.0f);	glVertex3f(-size, -size, -size);
+			glTexCoord2f(0.0f, 1.0f);	glVertex3f(-size, size, -size);
+
+		glEnd();
+	}
 	glPopMatrix();
 	//Right
 	glPushMatrix();
+	if(n_texture>-1){
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, texture[n_texture]);
 		initMaterials();
@@ -345,9 +391,21 @@ void cube(GLfloat size, int n_texture){
 
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
+	}
+	else{
+		glNormal3f(-1,0,0);
+		glBegin(GL_POLYGON);
+			glTexCoord2f(0.0f, 0.0f);	glVertex3f(size, size, size);
+			glTexCoord2f(1.0f, 0.0f);	glVertex3f(size, -size, size);
+			glTexCoord2f(1.0f, 1.0f);	glVertex3f(size, -size, -size);
+			glTexCoord2f(0.0f, 1.0f);	glVertex3f(size, size, -size);
+
+		glEnd();
+	}
 	glPopMatrix();
 	//Left
 	glPushMatrix();
+	if(n_texture>-1){
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, texture[n_texture]);
 		initMaterials();
@@ -360,50 +418,64 @@ void cube(GLfloat size, int n_texture){
 
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
+	}
+	else{
+		glNormal3f(-1,0,0);
+		glBegin(GL_POLYGON);
+			glTexCoord2f(0.0f, 0.0f); 	glVertex3f(-size, size, size);
+			glTexCoord2f(1.0f, 0.0f);	glVertex3f(-size, size, -size);
+			glTexCoord2f(1.0f, 1.0f);	glVertex3f(-size, -size, -size);
+			glTexCoord2f(0.0f, 1.0f);	glVertex3f(-size, -size, size);
+
+		glEnd();
+	}
 	glPopMatrix();
 }
 
 void desenha_espelho(){
 	glPushMatrix();
+	glTranslatef(width-2,height+0.52,(2*length)/3+2);
 	glBegin(GL_POLYGON);
-			glVertex3f(length-1, height, width);
-			glVertex3f(length-1, height, width+1.5);
-			glVertex3f(length-1, height+2, width+1.5);
-			glVertex3f(length-1, height+2, width);
+			glVertex3f(1.5, -1.1, -1.5);
+			glVertex3f(-1.5, -1.1, -1.5);
+			glVertex3f(-1.5, -1.1, 1.5);
+			glVertex3f(1.5, -1.1, 1.5);
 		glEnd();
 	glPopMatrix();
 }
 
-void espelhoD(){
-	glColorMask(0,0,0,0);
-	glDisable(GL_DEPTH_TEST);
-	glEnable(GL_STENCIL_TEST);
-	glClear(GL_STENCIL_BUFFER_BIT);
-	glStencilMask(0xFF);
+void draw_cube(){
 
-	glStencilFunc(GL_ALWAYS,1,1);
+	glPushMatrix();
+		glTranslatef(width-2,height+1.2,(2*length)/3+2);
+		cube(1,3);
+	glPopMatrix();
+}
+
+void espelhoD(){
+	glDisable(GL_DEPTH_TEST);
+
+	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_REPLACE,GL_REPLACE,GL_REPLACE);
+	glStencilFunc(GL_ALWAYS,1,0xFF);
+
 	desenha_espelho();
 
-	glColorMask(1,1,1,1);
+	glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
 	glEnable(GL_DEPTH_TEST);
-	glClear(GL_DEPTH_BUFFER_BIT);
 
-	glStencilFunc(GL_EQUAL,1,1);
+
+	glStencilFunc(GL_EQUAL,1,0xFF);
 	glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
 
 	glPushMatrix();
-
-		glScalef(1,1,-1);
-		glTranslatef(width-2,height+.3,length/2+2);
-		glutSolidCube(1);
+		glScalef(1,-1,1);
+		draw_cube();
 	glPopMatrix();
 	
 	glDisable(GL_STENCIL_TEST);
-	glPushMatrix();
-		glTranslatef(width-2,height+.3,length/2+2);
-		glutSolidCube(1);
-	glPopMatrix();
+
+	draw_cube();
 }
 
 void Tub(GLfloat size, int n_texture){
@@ -883,14 +955,13 @@ void drawScene(){
 	nSteps = nSteps - (foward / 2);
 	stair_espelho = espelho, stair_largura = largura, stair_n_steps = nSteps, stair_piso = piso;
 	
-	
+	espelhoD();
 	stair(largura, piso, espelho, Stair_Ini_X, Stair_Ini_Y, Stair_Ini_Z, nSteps + 1);
 	walls(width, length, 2 * height, width_window, height_window, depth_wall, window_xPos, window_yPos);
 	drawWallDoor(width, length / 2, height, width_door, height_door, depth_wall, door_xPos);
 	drawTable(table_width, table_length, table_thickness, table_xPos, table_yPos, table_zPos, table_legs_thickness);
 	drawChair(chair_width, chair_length, chair_thickness, chair_leg_size, 7, 0.4, 14);
 	drawCeiling(width, length, height, width_window, height_window, depth_wall, window_xPos, window_yPos);
-	espelhoD();
 	
 	glPushMatrix();
 		glTranslatef(7 , 4.3 , 7);
